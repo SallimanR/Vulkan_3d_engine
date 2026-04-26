@@ -15,6 +15,8 @@ Makefile
 # meson files:
 build/
 
+./assets/spirv/
+
 # vscode configuration:
 .vscode/
 *.code-workspace
