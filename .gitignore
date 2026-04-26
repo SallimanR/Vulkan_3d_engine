@@ -1,0 +1,33 @@
+# bin directories:
+[Bb]uild/
+[Bb]in/
+
+# clangd:
+.cache/
+
+# cmake files:
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+
+Makefile
+
+# meson files:
+build/
+
+# vscode configuration:
+.vscode/
+*.code-workspace
+
+# visual studio files/directories:
+*.vcxproj*
+*.sln
+.cmake/
+x64/
+x32/
+[Dd]ebug/
+[Rr]elease/
+.vs/
+
+# macos
+.DS_Store
