@@ -10,7 +10,8 @@ glfw_dep = dependency('glfw3')
 sources = files(
   'src/main.cpp',
   'src/platform/lve_window.cpp',
-  'src/platform/lve_app_base.cpp'
+  'src/platform/lve_app_base.cpp',
+  'src/graphics/vulkan/vk_pipeline.cpp'
 )
 
 exe = executable('app', 

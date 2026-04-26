@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lve_window.hpp"
+#include "src/graphics/vulkan/vk_pipeline.hpp"
 
 namespace lve {
 
@@ -13,6 +14,7 @@ public:
 
 private:
 	LVEWindow lveWindow{ WIDTH, HEIGHT, "C++ Vulkan" };
+	LVEVulkanPipeline lveVulkanPipeline{ "assets/spirv/triangle.vert.spv", "assets/spirv/triangle.frag.spv" };
 };
 
 } //namespace lve
