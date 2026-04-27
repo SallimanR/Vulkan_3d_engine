@@ -36,14 +36,4 @@ void LVEWindow::initWindow() {
 	}
 }
 
-// bool LVEWindow::initWindow() {
-// 	if (!glfwInit()) {
-// 		return false;
-// 	}
-//
-// 	window = glfwCreateWindow(width, height, "GLFW Vulkan", nullptr, nullptr);
-//
-// 	return true;
-// }
-
 } //namespace lve
