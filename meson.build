@@ -11,7 +11,8 @@ sources = files(
   'src/main.cpp',
   'src/platform/lve_window.cpp',
   'src/platform/lve_app_base.cpp',
-  'src/graphics/vulkan/vk_pipeline.cpp'
+  'src/graphics/vulkan/vk_pipeline.cpp',
+  'src/graphics/vulkan/vk_device.cpp'
 )
 
 exe = executable('app', 

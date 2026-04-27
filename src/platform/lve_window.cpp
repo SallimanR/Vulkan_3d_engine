@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <stdexcept>
 
 namespace lve {
 
@@ -36,4 +37,9 @@ void LVEWindow::initWindow() {
 	}
 }
 
+void LVEWindow::createWindowSurface(VkInstance instace, VkSurfaceKHR *surface) {
+	if (glfwCreateWindowSurface(instace, window, nullptr, surface) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create window surface");
+	}
+}
 } //namespace lve
