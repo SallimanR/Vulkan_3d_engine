@@ -125,6 +125,10 @@ void LVEVulkanPipeline::createShaderModule(const std::vector<char> &code, VkShad
 	}
 }
 
+void LVEVulkanPipeline::bind(VkCommandBuffer commandBuffer) {
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+}
+
 VulkanPipelineConfigInfo LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(uint32_t width, uint32_t height) {
 	VulkanPipelineConfigInfo configInfo{};
 
