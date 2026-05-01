@@ -1,6 +1,6 @@
 project('vulkan-tutorial', 'cpp',
 version : '0.1.0',
-default_options : ['warning_level=3'])
+default_options : ['cpp_std=c++20', 'optimization=3', 'warning_level=3'])
 
 cc = meson.get_compiler('cpp')
 
