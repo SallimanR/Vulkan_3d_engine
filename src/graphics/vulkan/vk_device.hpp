@@ -32,7 +32,7 @@ public:
 
 	// Not copyable or movable
 	LVEVulkanDevice(const LVEVulkanDevice &) = delete;
-	void operator=(const LVEVulkanDevice &) = delete;
+	LVEVulkanDevice operator=(const LVEVulkanDevice &) = delete;
 	LVEVulkanDevice(LVEVulkanDevice &&) = delete;
 	LVEVulkanDevice &operator=(LVEVulkanDevice &&) = delete;
 

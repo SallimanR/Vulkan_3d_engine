@@ -16,7 +16,7 @@ public:
 	~LVEVulkanSwapChain();
 
 	LVEVulkanSwapChain(const LVEVulkanSwapChain &) = delete;
-	void operator=(const LVEVulkanSwapChain &) = delete;
+	LVEVulkanSwapChain operator=(const LVEVulkanSwapChain &) = delete;
 
 	VkFramebuffer getFramebuffer(int index) { return swapChainFramebuffers[index]; }
 	VkRenderPass getRenderPass() { return renderPass; }
