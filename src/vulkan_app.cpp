@@ -1,5 +1,7 @@
 #include "vulkan_app.hpp"
 
+#include "src/graphics/vulkan/vk_pipeline.hpp"
+
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan_core.h>
 
@@ -13,7 +15,7 @@ namespace lve {
 LVEVulkanApp::LVEVulkanApp() {
 	loadModels();
 	createVulkanPipelineLayout();
-	createVulkanPipeline();
+	recreateSwapChain();
 	createVulkanCommandBuffers();
 }
 
@@ -50,9 +52,37 @@ void LVEVulkanApp::createVulkanPipelineLayout() {
 	}
 }
 
+void LVEVulkanApp::recreateSwapChain() {
+	auto extent = lveWindow.getExtent();
+	while (extent.width == 0 || extent.height == 0) {
+		extent = lveWindow.getExtent();
+		glfwWaitEvents();
+	}
+	vkDeviceWaitIdle(lveVulkanDevice.device());
+
+	// TODO: replace this
+	lveVulkanSwapChain = nullptr;
+
+	if (lveVulkanSwapChain == nullptr) {
+		lveVulkanSwapChain = std::make_unique<LVEVulkanSwapChain>(lveVulkanDevice, extent);
+	} else {
+		lveVulkanSwapChain = std::make_unique<LVEVulkanSwapChain>(lveVulkanDevice, extent, std::move(lveVulkanSwapChain));
+		if (lveVulkanSwapChain->imageCount() != vulkanCommandBuffers.size()) {
+			freeVulkanCommandBuffers();
+			createVulkanCommandBuffers();
+		}
+	}
+
+	createVulkanPipeline();
+}
+
 void LVEVulkanApp::createVulkanPipeline() {
-	auto pipelineConfig = LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(lveVulkanSwapChain.width(), lveVulkanSwapChain.height());
-	pipelineConfig.renderPass = lveVulkanSwapChain.getRenderPass();
+	assert(lveVulkanSwapChain != nullptr && "Cannot create pipeline before swap chain");
+	assert(vulkanPipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
+
+	VulkanPipelineConfigInfo pipelineConfig{};
+	LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(pipelineConfig);
+	pipelineConfig.renderPass = lveVulkanSwapChain->getRenderPass();
 	pipelineConfig.pipelineLayout = vulkanPipelineLayout;
 	lveVulkanPipeline = std::make_unique<LVEVulkanPipeline>(
 			lveVulkanDevice,
@@ -62,7 +92,7 @@ void LVEVulkanApp::createVulkanPipeline() {
 }
 
 void LVEVulkanApp::createVulkanCommandBuffers() {
-	vulkanCommandBuffers.resize(lveVulkanSwapChain.imageCount());
+	vulkanCommandBuffers.resize(lveVulkanSwapChain->imageCount());
 
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -74,52 +104,82 @@ void LVEVulkanApp::createVulkanCommandBuffers() {
 			VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate command buffer!");
 	}
+}
 
-	for (int i = 0; i < vulkanCommandBuffers.size(); i++) {
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+void LVEVulkanApp::freeVulkanCommandBuffers() {
+	vkFreeCommandBuffers(
+			lveVulkanDevice.device(),
+			lveVulkanDevice.getCommandPool(),
+			static_cast<uint32_t>(vulkanCommandBuffers.size()),
+			vulkanCommandBuffers.data());
+	vulkanCommandBuffers.clear();
+}
 
-		if (vkBeginCommandBuffer(vulkanCommandBuffers[i], &beginInfo) != VK_SUCCESS) {
-			throw std::runtime_error("failed to begin recording command buffer!");
-		};
+void LVEVulkanApp::recordCommandBuffer(int imageIndex) {
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-		VkRenderPassBeginInfo renderPassInfo{};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = lveVulkanSwapChain.getRenderPass();
-		renderPassInfo.framebuffer = lveVulkanSwapChain.getFramebuffer(i);
+	if (vkBeginCommandBuffer(vulkanCommandBuffers[imageIndex], &beginInfo) != VK_SUCCESS) {
+		throw std::runtime_error("failed to begin recording command buffer!");
+	};
 
-		renderPassInfo.renderArea.offset = { 0, 0 };
-		renderPassInfo.renderArea.extent = lveVulkanSwapChain.getSwapChainExtent();
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = lveVulkanSwapChain->getRenderPass();
+	renderPassInfo.framebuffer = lveVulkanSwapChain->getFramebuffer(imageIndex);
 
-		std::array<VkClearValue, 2> clearValues{};
-		clearValues[0].color = { 0.1f, 0.1f, 0.1f, 1.0f };
-		clearValues[1].depthStencil = { 1.0f, 0 };
-		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-		renderPassInfo.pClearValues = clearValues.data();
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = lveVulkanSwapChain->getSwapChainExtent();
 
-		vkCmdBeginRenderPass(vulkanCommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	std::array<VkClearValue, 2> clearValues{};
+	clearValues[0].color = { 0.1f, 0.1f, 0.1f, 1.0f };
+	clearValues[1].depthStencil = { 1.0f, 0 };
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
 
-		lveVulkanPipeline->bind(vulkanCommandBuffers[i]);
-		lveModel->bind(vulkanCommandBuffers[i]);
-		lveModel->draw(vulkanCommandBuffers[i]);
+	vkCmdBeginRenderPass(vulkanCommandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		vkCmdEndRenderPass(vulkanCommandBuffers[i]);
-		if (vkEndCommandBuffer(vulkanCommandBuffers[i]) != VK_SUCCESS) {
-			throw std::runtime_error("failed to record command buffer!");
-		}
+	VkViewport viewport{};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = static_cast<float>(lveVulkanSwapChain->getSwapChainExtent().width);
+	viewport.height = static_cast<float>(lveVulkanSwapChain->getSwapChainExtent().height);
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	VkRect2D scissor{ { 0, 0 }, lveVulkanSwapChain->getSwapChainExtent() };
+	vkCmdSetViewport(vulkanCommandBuffers[imageIndex], 0, 1, &viewport);
+	vkCmdSetScissor(vulkanCommandBuffers[imageIndex], 0, 1, &scissor);
+
+	lveVulkanPipeline->bind(vulkanCommandBuffers[imageIndex]);
+	lveModel->bind(vulkanCommandBuffers[imageIndex]);
+	lveModel->draw(vulkanCommandBuffers[imageIndex]);
+
+	vkCmdEndRenderPass(vulkanCommandBuffers[imageIndex]);
+	if (vkEndCommandBuffer(vulkanCommandBuffers[imageIndex]) != VK_SUCCESS) {
+		throw std::runtime_error("failed to record command buffer!");
 	}
 }
 
 void LVEVulkanApp::drawFrame() {
 	uint32_t imageIndex;
-	auto result = lveVulkanSwapChain.acquireNextImage(&imageIndex);
-
+	auto result = lveVulkanSwapChain->acquireNextImage(&imageIndex);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+		recreateSwapChain();
+		return;
+	}
 	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
 		throw std::runtime_error("failed to aquire swapchain image!");
 	}
 
-	result = lveVulkanSwapChain.submitCommandBuffers(&vulkanCommandBuffers[imageIndex], &imageIndex);
-	if (result != VK_SUCCESS) {
+	recordCommandBuffer(imageIndex);
+	result = lveVulkanSwapChain->submitCommandBuffers(&vulkanCommandBuffers[imageIndex], &imageIndex);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR ||
+			result == VK_SUBOPTIMAL_KHR ||
+			lveWindow.wasWindowResized()) {
+		lveWindow.resetWindowResizedFlag();
+		recreateSwapChain();
+		return;
+	} else if (result != VK_SUCCESS) {
 		throw std::runtime_error("failed to present swapchain image!");
 	}
 }

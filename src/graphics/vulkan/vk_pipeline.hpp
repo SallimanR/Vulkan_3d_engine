@@ -11,14 +11,19 @@
 namespace lve {
 
 struct VulkanPipelineConfigInfo {
-	VkViewport viewport;
-	VkRect2D scissor;
+	VulkanPipelineConfigInfo() = default;
+	VulkanPipelineConfigInfo(const VulkanPipelineConfigInfo &) = delete;
+	VulkanPipelineConfigInfo &operator=(const VulkanPipelineConfigInfo &) = delete;
+
+	VkPipelineViewportStateCreateInfo viewportInfo;
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 	VkPipelineRasterizationStateCreateInfo rasterizationInfo;
 	VkPipelineMultisampleStateCreateInfo multisampleInfo;
 	VkPipelineColorBlendAttachmentState colorBlendAttachment;
 	VkPipelineColorBlendStateCreateInfo colorBlendInfo;
 	VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+	std::vector<VkDynamicState> dynamicStateEnables;
+	VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 	VkPipelineLayout pipelineLayout = nullptr;
 	VkRenderPass renderPass = nullptr;
 	uint32_t subpass = 0;
@@ -37,7 +42,7 @@ public:
 	LVEVulkanPipeline operator=(const LVEVulkanPipeline &) = delete;
 
 	void bind(VkCommandBuffer commandBuffer);
-	static VulkanPipelineConfigInfo defaultVulkanPipelineConfigInfo(uint32_t width, uint32_t height);
+	static void defaultVulkanPipelineConfigInfo(VulkanPipelineConfigInfo &configInfo);
 
 private:
 	static std::vector<char> readFile(const std::string &filePath);

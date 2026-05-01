@@ -30,11 +30,14 @@ private:
 	void createVulkanPipelineLayout();
 	void createVulkanPipeline();
 	void createVulkanCommandBuffers();
+	void freeVulkanCommandBuffers();
 	void drawFrame();
+	void recreateSwapChain();
+	void recordCommandBuffer(int imageIndex);
 
 	LVEWindow lveWindow{ WIDTH, HEIGHT, "C++ Vulkan" };
 	LVEVulkanDevice lveVulkanDevice{ lveWindow };
-	LVEVulkanSwapChain lveVulkanSwapChain{ lveVulkanDevice, lveWindow.getExtent() };
+	std::unique_ptr<LVEVulkanSwapChain> lveVulkanSwapChain;
 	std::unique_ptr<LVEVulkanPipeline> lveVulkanPipeline;
 
 	VkPipelineLayout vulkanPipelineLayout;

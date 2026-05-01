@@ -1,17 +1,34 @@
 #include "vk_swapchain.hpp"
 
-// std
 #include <array>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <limits>
-#include <set>
+#include <memory>
 #include <stdexcept>
 
 namespace lve {
 
-LVEVulkanSwapChain::LVEVulkanSwapChain(LVEVulkanDevice &deviceRef, VkExtent2D extent) : vulkanDevice{ deviceRef }, windowExtent{ extent } {
+LVEVulkanSwapChain::LVEVulkanSwapChain(
+		LVEVulkanDevice &deviceRef,
+		VkExtent2D extent) : vulkanDevice{ deviceRef },
+							 windowExtent{ extent } {
+	init();
+}
+
+LVEVulkanSwapChain::LVEVulkanSwapChain(
+		LVEVulkanDevice &deviceRef,
+		VkExtent2D extent,
+		std::shared_ptr<LVEVulkanSwapChain> previousSwapchain) : vulkanDevice{ deviceRef },
+																 windowExtent{ extent } {
+	init();
+
+	// Clean up oldSwapChain since it is no longer needed.
+	oldSwapChain == nullptr;
+}
+
+void LVEVulkanSwapChain::init() {
 	createSwapChain();
 	createImageViews();
 	createRenderPass();
@@ -160,7 +177,11 @@ void LVEVulkanSwapChain::createSwapChain() {
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
 
-	createInfo.oldSwapchain = VK_NULL_HANDLE;
+	if (createInfo.oldSwapchain == nullptr) {
+		createInfo.oldSwapchain = VK_NULL_HANDLE;
+	} else {
+		createInfo.oldSwapchain = oldSwapChain->swapChain;
+	}
 
 	if (vkCreateSwapchainKHR(vulkanDevice.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create swap chain!");
