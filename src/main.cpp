@@ -5,7 +5,7 @@
 #include <iostream>
 
 int main() {
-	lve::LVEAppBase app{};
+	lve::LVEVulkanApp app{};
 
 	try {
 		app.run();

@@ -14,6 +14,7 @@ sources = files(
   'src/graphics/vulkan/vk_device.cpp',
   'src/graphics/vulkan/vk_pipeline.cpp',
   'src/graphics/vulkan/vk_swapchain.cpp',
+  'src/graphics/vulkan/vk_model.cpp',
 )
 
 exe = executable('app', 

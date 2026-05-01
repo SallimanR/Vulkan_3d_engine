@@ -6,27 +6,39 @@
 #include <array>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 
 namespace lve {
 
-LVEAppBase::LVEAppBase() {
+LVEVulkanApp::LVEVulkanApp() {
+	loadModels();
 	createVulkanPipelineLayout();
 	createVulkanPipeline();
 	createVulkanCommandBuffers();
 }
 
-LVEAppBase::~LVEAppBase() {
+LVEVulkanApp::~LVEVulkanApp() {
 	vkDestroyPipelineLayout(lveVulkanDevice.device(), vulkanPipelineLayout, nullptr);
 }
 
-void LVEAppBase::run() {
+void LVEVulkanApp::run() {
 	while (!lveWindow.shouldClose()) {
 		glfwPollEvents();
 		drawFrame();
 	}
 }
 
-void LVEAppBase::createVulkanPipelineLayout() {
+void LVEVulkanApp::loadModels() {
+	std::vector<LVEVulkanModel::Vertex> verticies = {
+		{ { 0.0f, -0.5f } },
+		{ { 0.5f, 0.5f } },
+		{ { -0.5f, 0.5f } }
+	};
+
+	lveModel = std::make_unique<LVEVulkanModel>(lveVulkanDevice, verticies);
+}
+
+void LVEVulkanApp::createVulkanPipelineLayout() {
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 0;
@@ -38,7 +50,7 @@ void LVEAppBase::createVulkanPipelineLayout() {
 	}
 }
 
-void LVEAppBase::createVulkanPipeline() {
+void LVEVulkanApp::createVulkanPipeline() {
 	auto pipelineConfig = LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(lveVulkanSwapChain.width(), lveVulkanSwapChain.height());
 	pipelineConfig.renderPass = lveVulkanSwapChain.getRenderPass();
 	pipelineConfig.pipelineLayout = vulkanPipelineLayout;
@@ -49,7 +61,7 @@ void LVEAppBase::createVulkanPipeline() {
 			pipelineConfig);
 }
 
-void LVEAppBase::createVulkanCommandBuffers() {
+void LVEVulkanApp::createVulkanCommandBuffers() {
 	vulkanCommandBuffers.resize(lveVulkanSwapChain.imageCount());
 
 	VkCommandBufferAllocateInfo allocInfo{};
@@ -88,7 +100,8 @@ void LVEAppBase::createVulkanCommandBuffers() {
 		vkCmdBeginRenderPass(vulkanCommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		lveVulkanPipeline->bind(vulkanCommandBuffers[i]);
-		vkCmdDraw(vulkanCommandBuffers[i], 3, 1, 0, 0);
+		lveModel->bind(vulkanCommandBuffers[i]);
+		lveModel->draw(vulkanCommandBuffers[i]);
 
 		vkCmdEndRenderPass(vulkanCommandBuffers[i]);
 		if (vkEndCommandBuffer(vulkanCommandBuffers[i]) != VK_SUCCESS) {
@@ -97,7 +110,7 @@ void LVEAppBase::createVulkanCommandBuffers() {
 	}
 }
 
-void LVEAppBase::drawFrame() {
+void LVEVulkanApp::drawFrame() {
 	uint32_t imageIndex;
 	auto result = lveVulkanSwapChain.acquireNextImage(&imageIndex);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics/vulkan/vk_device.hpp"
+#include "src/graphics/vulkan/vk_model.hpp"
 #include "src/graphics/vulkan/vk_pipeline.hpp"
 #include "src/graphics/vulkan/vk_swapchain.hpp"
 
@@ -11,20 +12,21 @@
 
 namespace lve {
 
-class LVEAppBase {
+class LVEVulkanApp {
 public:
 	static constexpr int WIDTH = 800;
 	static constexpr int HEIGHT = 600;
 
-	LVEAppBase();
-	~LVEAppBase();
+	LVEVulkanApp();
+	~LVEVulkanApp();
 
-	LVEAppBase(const LVEAppBase &) = delete;
-	LVEAppBase &operator=(const LVEAppBase &) = delete;
+	LVEVulkanApp(const LVEVulkanApp &) = delete;
+	LVEVulkanApp &operator=(const LVEVulkanApp &) = delete;
 
 	void run();
 
 private:
+	void loadModels();
 	void createVulkanPipelineLayout();
 	void createVulkanPipeline();
 	void createVulkanCommandBuffers();
@@ -37,6 +39,7 @@ private:
 
 	VkPipelineLayout vulkanPipelineLayout;
 	std::vector<VkCommandBuffer> vulkanCommandBuffers;
+	std::unique_ptr<LVEVulkanModel> lveModel;
 };
 
 } //namespace lve
