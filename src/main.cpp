@@ -1,4 +1,4 @@
-#include "platform/lve_app_base.hpp"
+#include "vulkan_app.hpp"
 
 #include <cstdlib>
 #include <exception>

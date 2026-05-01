@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../graphics/vulkan/vk_device.hpp"
-#include "lve_window.hpp"
+#include "graphics/vulkan/vk_device.hpp"
 #include "src/graphics/vulkan/vk_pipeline.hpp"
 #include "src/graphics/vulkan/vk_swapchain.hpp"
+
+#include "platform/lve_window.hpp"
 
 #include <memory>
 #include <vector>

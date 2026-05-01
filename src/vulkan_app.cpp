@@ -1,4 +1,4 @@
-#include "lve_app_base.hpp"
+#include "vulkan_app.hpp"
 
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan_core.h>
