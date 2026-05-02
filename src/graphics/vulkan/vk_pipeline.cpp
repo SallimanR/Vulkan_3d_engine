@@ -12,11 +12,11 @@
 
 namespace lve {
 
-LVEVulkanPipeline::LVEVulkanPipeline(
-		LVEVulkanDevice &device,
-		const std::string &vertFilePath,
-		const std::string &fragFilePath,
-		const VulkanPipelineConfigInfo &configInfo) : vulkanDevice{ device } {
+LVEVulkanPipeline::LVEVulkanPipeline(LVEVulkanDevice &device,
+									 const std::string &vertFilePath,
+									 const std::string &fragFilePath,
+									 const VulkanPipelineConfigInfo &configInfo)
+	: vulkanDevice{device} {
 	createGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
 }
 
@@ -27,7 +27,7 @@ LVEVulkanPipeline::~LVEVulkanPipeline() {
 }
 
 std::vector<char> LVEVulkanPipeline::readFile(const std::string &filePath) {
-	std::ifstream file{ filePath, std::ios::ate | std::ios::binary };
+	std::ifstream file{filePath, std::ios::ate | std::ios::binary};
 
 	if (!file.is_open()) {
 		throw std::runtime_error("failed to open file path: " + filePath);
@@ -42,13 +42,14 @@ std::vector<char> LVEVulkanPipeline::readFile(const std::string &filePath) {
 }
 
 void LVEVulkanPipeline::createGraphicsPipeline(
-		const std::string &vertFilePath,
-		const std::string &fragFilePath,
-		const VulkanPipelineConfigInfo &configInfo) {
+	const std::string &vertFilePath, const std::string &fragFilePath,
+	const VulkanPipelineConfigInfo &configInfo) {
 	assert(configInfo.pipelineLayout != VK_NULL_HANDLE &&
-			"Cannot create graphics pipeline: no pipelineLayout provided in config info");
+		   "Cannot create graphics pipeline: no pipelineLayout provided in "
+		   "config info");
 	assert(configInfo.renderPass != VK_NULL_HANDLE &&
-			"Cannot create graphics pipeline: no renderPass provided in config info");
+		   "Cannot create graphics pipeline: no renderPass provided in config "
+		   "info");
 	auto vertCode = readFile(vertFilePath);
 	auto fragCode = readFile(fragFilePath);
 
@@ -72,12 +73,16 @@ void LVEVulkanPipeline::createGraphicsPipeline(
 	shaderStages[1].pSpecializationInfo = nullptr;
 
 	auto bindingDescriptions = LVEVulkanModel::Vertex::getBindingDescription();
-	auto attributeDescriptions = LVEVulkanModel::Vertex::getAttributeDescription();
+	auto attributeDescriptions =
+		LVEVulkanModel::Vertex::getAttributeDescription();
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+	vertexInputInfo.sType =
+		VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	vertexInputInfo.vertexBindingDescriptionCount =
+		static_cast<uint32_t>(bindingDescriptions.size());
 	vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
-	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInputInfo.vertexAttributeDescriptionCount =
+		static_cast<uint32_t>(attributeDescriptions.size());
 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
@@ -100,38 +105,40 @@ void LVEVulkanPipeline::createGraphicsPipeline(
 	pipelineInfo.basePipelineIndex = -1;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-	if (vkCreateGraphicsPipelines(
-				vulkanDevice.device(),
-				VK_NULL_HANDLE,
-				1,
-				&pipelineInfo,
-				nullptr,
-				&graphicsPipeline) != VK_SUCCESS) {
+	if (vkCreateGraphicsPipelines(vulkanDevice.device(), VK_NULL_HANDLE, 1,
+								  &pipelineInfo, nullptr,
+								  &graphicsPipeline) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create graphics pipeline");
 	}
 }
 
-void LVEVulkanPipeline::createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule) {
+void LVEVulkanPipeline::createShaderModule(const std::vector<char> &code,
+										   VkShaderModule *shaderModule) {
 	VkShaderModuleCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	createInfo.codeSize = code.size();
 	createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
 
-	if (vkCreateShaderModule(vulkanDevice.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
+	if (vkCreateShaderModule(vulkanDevice.device(), &createInfo, nullptr,
+							 shaderModule) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create shader module");
 	}
 }
 
 void LVEVulkanPipeline::bind(VkCommandBuffer commandBuffer) {
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+					  graphicsPipeline);
 }
 
-void LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(VulkanPipelineConfigInfo &configInfo) {
-	configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+void LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(
+	VulkanPipelineConfigInfo &configInfo) {
+	configInfo.inputAssemblyInfo.sType =
+		VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
 
-	configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	configInfo.viewportInfo.sType =
+		VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	configInfo.viewportInfo.viewportCount = 1;
 	// configInfo.viewportInfo.pViewports = &configInfo.viewport;
 	configInfo.viewportInfo.pViewports = nullptr;
@@ -139,7 +146,8 @@ void LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(VulkanPipelineConfigInfo
 	// configInfo.viewportInfo.pScissors = &configInfo.scissor;
 	configInfo.viewportInfo.pScissors = nullptr;
 
-	configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	configInfo.rasterizationInfo.sType =
+		VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
 	configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
 	configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
@@ -154,26 +162,32 @@ void LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(VulkanPipelineConfigInfo
 	// ---------------------------------------------------------
 
 	/* ------------------  TODO:  --------------------------- */
-	configInfo.multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	configInfo.multisampleInfo.sType =
+		VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	configInfo.multisampleInfo.sampleShadingEnable = VK_FALSE;
 	configInfo.multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-	configInfo.multisampleInfo.minSampleShading = 1.0f; // Optional
-	configInfo.multisampleInfo.pSampleMask = nullptr; // Optional
+	configInfo.multisampleInfo.minSampleShading = 1.0f;			 // Optional
+	configInfo.multisampleInfo.pSampleMask = nullptr;			 // Optional
 	configInfo.multisampleInfo.alphaToCoverageEnable = VK_FALSE; // Optional
-	configInfo.multisampleInfo.alphaToOneEnable = VK_FALSE; // Optional
+	configInfo.multisampleInfo.alphaToOneEnable = VK_FALSE;		 // Optional
 
 	configInfo.colorBlendAttachment.colorWriteMask =
-			VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-			VK_COLOR_COMPONENT_A_BIT;
+		VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+		VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	configInfo.colorBlendAttachment.blendEnable = VK_FALSE;
-	configInfo.colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-	configInfo.colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+	configInfo.colorBlendAttachment.srcColorBlendFactor =
+		VK_BLEND_FACTOR_ONE; // Optional
+	configInfo.colorBlendAttachment.dstColorBlendFactor =
+		VK_BLEND_FACTOR_ZERO;										// Optional
 	configInfo.colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD; // Optional
-	configInfo.colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-	configInfo.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+	configInfo.colorBlendAttachment.srcAlphaBlendFactor =
+		VK_BLEND_FACTOR_ONE; // Optional
+	configInfo.colorBlendAttachment.dstAlphaBlendFactor =
+		VK_BLEND_FACTOR_ZERO;										// Optional
 	configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
 
-	configInfo.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	configInfo.colorBlendInfo.sType =
+		VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	configInfo.colorBlendInfo.logicOpEnable = VK_FALSE;
 	configInfo.colorBlendInfo.logicOp = VK_LOGIC_OP_COPY; // Optional
 	configInfo.colorBlendInfo.attachmentCount = 1;
@@ -183,7 +197,8 @@ void LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(VulkanPipelineConfigInfo
 	configInfo.colorBlendInfo.blendConstants[2] = 0.0f; // Optional
 	configInfo.colorBlendInfo.blendConstants[3] = 0.0f; // Optional
 
-	configInfo.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	configInfo.depthStencilInfo.sType =
+		VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 	configInfo.depthStencilInfo.depthTestEnable = VK_TRUE;
 	configInfo.depthStencilInfo.depthWriteEnable = VK_TRUE;
 	configInfo.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
@@ -192,15 +207,18 @@ void LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(VulkanPipelineConfigInfo
 	configInfo.depthStencilInfo.maxDepthBounds = 1.0f; // Optional
 	configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
 	configInfo.depthStencilInfo.front = {}; // Optional
-	configInfo.depthStencilInfo.back = {}; // Optional
+	configInfo.depthStencilInfo.back = {};	// Optional
 	// ---------------------------------------------------------
 
-	configInfo.dynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
-	configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
+	configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT,
+									  VK_DYNAMIC_STATE_SCISSOR};
+	configInfo.dynamicStateInfo.sType =
+		VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	configInfo.dynamicStateInfo.pDynamicStates =
+		configInfo.dynamicStateEnables.data();
 	configInfo.dynamicStateInfo.dynamicStateCount =
-			static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
+		static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
 	configInfo.dynamicStateInfo.flags = 0;
 }
 
-} //namespace lve
+} // namespace lve

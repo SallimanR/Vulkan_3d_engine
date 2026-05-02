@@ -13,7 +13,7 @@
 namespace lve {
 
 class LVEVulkanApp {
-public:
+  public:
 	static constexpr int WIDTH = 800;
 	static constexpr int HEIGHT = 600;
 
@@ -25,7 +25,7 @@ public:
 
 	void run();
 
-private:
+  private:
 	void loadModels();
 	void createVulkanPipelineLayout();
 	void createVulkanPipeline();
@@ -35,8 +35,8 @@ private:
 	void recreateSwapChain();
 	void recordCommandBuffer(int imageIndex);
 
-	LVEWindow lveWindow{ WIDTH, HEIGHT, "C++ Vulkan" };
-	LVEVulkanDevice lveVulkanDevice{ lveWindow };
+	LVEWindow lveWindow{WIDTH, HEIGHT, "C++ Vulkan"};
+	LVEVulkanDevice lveVulkanDevice{lveWindow};
 	std::unique_ptr<LVEVulkanSwapChain> lveVulkanSwapChain;
 	std::unique_ptr<LVEVulkanPipeline> lveVulkanPipeline;
 
@@ -45,4 +45,4 @@ private:
 	std::unique_ptr<LVEVulkanModel> lveModel;
 };
 
-} //namespace lve
+} // namespace lve

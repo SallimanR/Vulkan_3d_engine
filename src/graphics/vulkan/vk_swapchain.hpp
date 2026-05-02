@@ -10,20 +10,20 @@
 namespace lve {
 
 class LVEVulkanSwapChain {
-public:
+  public:
 	static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 	LVEVulkanSwapChain(LVEVulkanDevice &deviceRef, VkExtent2D windowExtent);
-	LVEVulkanSwapChain(
-			LVEVulkanDevice &deviceRef,
-			VkExtent2D windowExtent,
-			std::shared_ptr<LVEVulkanSwapChain> previousSwapchain);
+	LVEVulkanSwapChain(LVEVulkanDevice &deviceRef, VkExtent2D windowExtent,
+					   std::shared_ptr<LVEVulkanSwapChain> previousSwapchain);
 	~LVEVulkanSwapChain();
 
 	LVEVulkanSwapChain(const LVEVulkanSwapChain &) = delete;
 	LVEVulkanSwapChain operator=(const LVEVulkanSwapChain &) = delete;
 
-	VkFramebuffer getFramebuffer(int index) { return swapChainFramebuffers[index]; }
+	VkFramebuffer getFramebuffer(int index) {
+		return swapChainFramebuffers[index];
+	}
 	VkRenderPass getRenderPass() { return renderPass; }
 	VkImageView getImageView(int index) { return swapChainImageViews[index]; }
 	size_t imageCount() { return swapChainImageViews.size(); }
@@ -33,14 +33,16 @@ public:
 	uint32_t height() { return swapChainExtent.height; }
 
 	float extentAspectRatio() {
-		return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
+		return static_cast<float>(swapChainExtent.width) /
+			   static_cast<float>(swapChainExtent.height);
 	}
 	VkFormat findDepthFormat();
 
 	VkResult acquireNextImage(uint32_t *imageIndex);
-	VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
+	VkResult submitCommandBuffers(const VkCommandBuffer *buffers,
+								  uint32_t *imageIndex);
 
-private:
+  private:
 	void init();
 
 	void createSwapChain();
@@ -52,9 +54,9 @@ private:
 
 	// Helper functions
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(
-			const std::vector<VkSurfaceFormatKHR> &availableFormats);
+		const std::vector<VkSurfaceFormatKHR> &availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(
-			const std::vector<VkPresentModeKHR> &availablePresentModes);
+		const std::vector<VkPresentModeKHR> &availablePresentModes);
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 
 	std::vector<VkFramebuffer> swapChainFramebuffers;
@@ -81,4 +83,4 @@ private:
 	size_t currentFrame = 0;
 };
 
-} //namespace lve
+} // namespace lve

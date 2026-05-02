@@ -13,16 +13,19 @@
 namespace lve {
 
 class LVEVulkanModel {
-public:
+  public:
 	struct Vertex {
 		glm::vec2 position;
 		glm::vec3 color;
 
-		static std::vector<VkVertexInputBindingDescription> getBindingDescription();
-		static std::vector<VkVertexInputAttributeDescription> getAttributeDescription();
+		static std::vector<VkVertexInputBindingDescription>
+		getBindingDescription();
+		static std::vector<VkVertexInputAttributeDescription>
+		getAttributeDescription();
 	};
 
-	LVEVulkanModel(LVEVulkanDevice &device, const std::vector<Vertex> &verticies);
+	LVEVulkanModel(LVEVulkanDevice &device,
+				   const std::vector<Vertex> &verticies);
 	~LVEVulkanModel();
 
 	LVEVulkanModel(const LVEVulkanModel &) = delete;
@@ -31,7 +34,7 @@ public:
 	void bind(VkCommandBuffer commandBuffer);
 	void draw(VkCommandBuffer commandBuffer);
 
-private:
+  private:
 	void createVertexBuffers(const std::vector<Vertex> &verticies);
 
 	LVEVulkanDevice &vulkanDevice;
@@ -40,4 +43,4 @@ private:
 	uint32_t vertexCount;
 };
 
-} //namespace lve
+} // namespace lve

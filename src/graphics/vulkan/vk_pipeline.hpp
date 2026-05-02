@@ -13,7 +13,8 @@ namespace lve {
 struct VulkanPipelineConfigInfo {
 	VulkanPipelineConfigInfo() = default;
 	VulkanPipelineConfigInfo(const VulkanPipelineConfigInfo &) = delete;
-	VulkanPipelineConfigInfo &operator=(const VulkanPipelineConfigInfo &) = delete;
+	VulkanPipelineConfigInfo &
+	operator=(const VulkanPipelineConfigInfo &) = delete;
 
 	VkPipelineViewportStateCreateInfo viewportInfo;
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
@@ -30,29 +31,28 @@ struct VulkanPipelineConfigInfo {
 };
 
 class LVEVulkanPipeline {
-public:
-	LVEVulkanPipeline(
-			LVEVulkanDevice &device,
-			const std::string &vertFilePath,
-			const std::string &fragFilePath,
-			const VulkanPipelineConfigInfo &configInfo);
+  public:
+	LVEVulkanPipeline(LVEVulkanDevice &device, const std::string &vertFilePath,
+					  const std::string &fragFilePath,
+					  const VulkanPipelineConfigInfo &configInfo);
 	~LVEVulkanPipeline();
 
 	LVEVulkanPipeline(const LVEVulkanPipeline &) = delete;
 	LVEVulkanPipeline operator=(const LVEVulkanPipeline &) = delete;
 
 	void bind(VkCommandBuffer commandBuffer);
-	static void defaultVulkanPipelineConfigInfo(VulkanPipelineConfigInfo &configInfo);
+	static void
+	defaultVulkanPipelineConfigInfo(VulkanPipelineConfigInfo &configInfo);
 
-private:
+  private:
 	static std::vector<char> readFile(const std::string &filePath);
 
-	void createGraphicsPipeline(
-			const std::string &vertFilePath,
-			const std::string &fragFilePath,
-			const VulkanPipelineConfigInfo &configInfo);
+	void createGraphicsPipeline(const std::string &vertFilePath,
+								const std::string &fragFilePath,
+								const VulkanPipelineConfigInfo &configInfo);
 
-	void createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule);
+	void createShaderModule(const std::vector<char> &code,
+							VkShaderModule *shaderModule);
 
 	LVEVulkanDevice &vulkanDevice;
 	VkPipeline graphicsPipeline;
@@ -60,4 +60,4 @@ private:
 	VkShaderModule fragShaderModule;
 };
 
-} //namespace lve
+} // namespace lve
