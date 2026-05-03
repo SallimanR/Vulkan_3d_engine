@@ -1,7 +1,7 @@
 #pragma once
 
+#include "core/lve_object.hpp"
 #include "graphics/vulkan/vk_device.hpp"
-#include "src/graphics/vulkan/vk_model.hpp"
 #include "src/graphics/vulkan/vk_pipeline.hpp"
 #include "src/graphics/vulkan/vk_swapchain.hpp"
 
@@ -26,7 +26,7 @@ class LVEVulkanApp {
 	void run();
 
   private:
-	void loadModels();
+	void loadObjects();
 	void createVulkanPipelineLayout();
 	void createVulkanPipeline();
 	void createVulkanCommandBuffers();
@@ -34,6 +34,7 @@ class LVEVulkanApp {
 	void drawFrame();
 	void recreateSwapChain();
 	void recordCommandBuffer(int imageIndex);
+	void renderObjects(VkCommandBuffer commandBuffer);
 
 	LVEWindow lveWindow{WIDTH, HEIGHT, "C++ Vulkan"};
 	LVEVulkanDevice lveVulkanDevice{lveWindow};
@@ -42,7 +43,7 @@ class LVEVulkanApp {
 
 	VkPipelineLayout vulkanPipelineLayout;
 	std::vector<VkCommandBuffer> vulkanCommandBuffers;
-	std::unique_ptr<LVEVulkanModel> lveModel;
+	std::vector<LVEObject> objects;
 };
 
 } // namespace lve

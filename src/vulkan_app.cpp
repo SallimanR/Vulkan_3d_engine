@@ -3,9 +3,11 @@
 #include "src/graphics/vulkan/vk_pipeline.hpp"
 
 #include <GLFW/glfw3.h>
+#include <utility>
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 #include <vulkan/vulkan_core.h>
 
 #include <array>
@@ -16,12 +18,15 @@
 namespace lve {
 
 struct VulkanPushConstantData {
+	// Identity matrix, every value on main (left-up corner) diagonal is 1
+	glm::mat2 transform{1.f};
+
 	glm::vec2 offset;
 	alignas(16) glm::vec3 color;
 };
 
 LVEVulkanApp::LVEVulkanApp() {
-	loadModels();
+	loadObjects();
 	createVulkanPipelineLayout();
 	recreateSwapChain();
 	createVulkanCommandBuffers();
@@ -39,13 +44,23 @@ void LVEVulkanApp::run() {
 	}
 }
 
-void LVEVulkanApp::loadModels() {
+void LVEVulkanApp::loadObjects() {
 	std::vector<LVEVulkanModel::Vertex> verticies = {
 		{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
 		{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
 		{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
 
-	lveModel = std::make_unique<LVEVulkanModel>(lveVulkanDevice, verticies);
+	auto lveModel =
+		std::make_shared<LVEVulkanModel>(lveVulkanDevice, verticies);
+
+	auto triangle = LVEObject::createObject();
+	triangle.model = lveModel;
+	triangle.color = {.1f, .8f, .1f};
+	triangle.transform2d.translation.x = .2f;
+	triangle.transform2d.scale = {2.f, .5f};
+	triangle.transform2d.rotation = .25f * glm::two_pi<float>();
+
+	objects.push_back(std::move(triangle));
 }
 
 void LVEVulkanApp::createVulkanPipelineLayout() {
@@ -133,9 +148,6 @@ void LVEVulkanApp::freeVulkanCommandBuffers() {
 }
 
 void LVEVulkanApp::recordCommandBuffer(int imageIndex) {
-	static int frame = 0;
-	frame = (frame + 1) % 1000;
-
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -153,7 +165,7 @@ void LVEVulkanApp::recordCommandBuffer(int imageIndex) {
 	renderPassInfo.renderArea.extent = lveVulkanSwapChain->getSwapChainExtent();
 
 	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = {0.01f, 0.1f, 0.1f, 1.0f};
+	clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f};
 	clearValues[1].depthStencil = {1.0f, 0};
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
@@ -174,25 +186,29 @@ void LVEVulkanApp::recordCommandBuffer(int imageIndex) {
 	vkCmdSetViewport(vulkanCommandBuffers[imageIndex], 0, 1, &viewport);
 	vkCmdSetScissor(vulkanCommandBuffers[imageIndex], 0, 1, &scissor);
 
-	lveVulkanPipeline->bind(vulkanCommandBuffers[imageIndex]);
-	lveModel->bind(vulkanCommandBuffers[imageIndex]);
-
-	for (int j = 0; j < 4; j++) {
-		VulkanPushConstantData push{};
-		push.offset = {-0.5f + frame * 0.002f, -0.4f + j * 0.25f};
-		push.color = {0.0f, 0.0f, 0.2f + 0.2f * j};
-
-		vkCmdPushConstants(
-			vulkanCommandBuffers[imageIndex], vulkanPipelineLayout,
-			VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-			sizeof(VulkanPushConstantData), &push);
-
-		lveModel->draw(vulkanCommandBuffers[imageIndex]);
-	}
+	renderObjects(vulkanCommandBuffers[imageIndex]);
 
 	vkCmdEndRenderPass(vulkanCommandBuffers[imageIndex]);
 	if (vkEndCommandBuffer(vulkanCommandBuffers[imageIndex]) != VK_SUCCESS) {
 		throw std::runtime_error("failed to record command buffer!");
+	}
+}
+
+void LVEVulkanApp::renderObjects(VkCommandBuffer commandBuffer) {
+	lveVulkanPipeline->bind(commandBuffer);
+
+	for (auto &obj : objects) {
+		VulkanPushConstantData push{};
+		push.offset = obj.transform2d.translation;
+		push.color = obj.color;
+		push.transform = obj.transform2d.mat2();
+
+		vkCmdPushConstants(commandBuffer, vulkanPipelineLayout,
+						   VK_SHADER_STAGE_VERTEX_BIT |
+							   VK_SHADER_STAGE_FRAGMENT_BIT,
+						   0, sizeof(VulkanPushConstantData), &push);
+		obj.model->bind(commandBuffer);
+		obj.model->draw(commandBuffer);
 	}
 }
 
