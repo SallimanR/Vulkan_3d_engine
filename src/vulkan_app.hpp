@@ -37,12 +37,13 @@ class LVEVulkanApp {
 	void renderObjects(VkCommandBuffer commandBuffer);
 
 	LVEWindow lveWindow{WIDTH, HEIGHT, "C++ Vulkan"};
+
 	LVEVulkanDevice lveVulkanDevice{lveWindow};
 	std::unique_ptr<LVEVulkanSwapChain> lveVulkanSwapChain;
 	std::unique_ptr<LVEVulkanPipeline> lveVulkanPipeline;
-
 	VkPipelineLayout vulkanPipelineLayout;
 	std::vector<VkCommandBuffer> vulkanCommandBuffers;
+
 	std::vector<LVEObject> objects;
 };
 
