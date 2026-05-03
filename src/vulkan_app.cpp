@@ -1,6 +1,6 @@
 #include "vulkan_app.hpp"
 
-#include "src/graphics/vulkan/vk_pipeline.hpp"
+#include "graphics/vulkan/vk_pipeline.hpp"
 
 #include <GLFW/glfw3.h>
 #include <utility>
