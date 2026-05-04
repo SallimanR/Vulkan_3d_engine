@@ -3,7 +3,7 @@
 #include "core/lve_object.hpp"
 #include "graphics/vulkan/vk_device.hpp"
 #include "graphics/vulkan/vk_pipeline.hpp"
-#include "graphics/vulkan/vk_swapchain.hpp"
+#include "renderer/lve_renderer.hpp"
 
 #include "platform/lve_window.hpp"
 
@@ -29,20 +29,14 @@ class LVEVulkanApp {
 	void loadObjects();
 	void createVulkanPipelineLayout();
 	void createVulkanPipeline();
-	void createVulkanCommandBuffers();
-	void freeVulkanCommandBuffers();
-	void drawFrame();
-	void recreateSwapChain();
-	void recordCommandBuffer(int imageIndex);
 	void renderObjects(VkCommandBuffer commandBuffer);
 
 	LVEWindow lveWindow{WIDTH, HEIGHT, "C++ Vulkan"};
-
 	LVEVulkanDevice lveVulkanDevice{lveWindow};
-	std::unique_ptr<LVEVulkanSwapChain> lveVulkanSwapChain;
+	LVERenderer lveRenderer{lveWindow, lveVulkanDevice};
+
 	std::unique_ptr<LVEVulkanPipeline> lveVulkanPipeline;
 	VkPipelineLayout vulkanPipelineLayout;
-	std::vector<VkCommandBuffer> vulkanCommandBuffers;
 
 	std::vector<LVEObject> objects;
 };
