@@ -43,7 +43,7 @@ class LVEObject {
 	LVEObject(LVEObject &&) = default;
 	LVEObject &operator=(LVEObject &&) = default;
 
-	id_t getIDd() { return id; }
+	id_t getID() const { return id; }
 
 	std::shared_ptr<LVEVulkanModel> model{};
 	glm::vec3 color{};
@@ -54,4 +54,5 @@ class LVEObject {
 
 	id_t id;
 };
+
 } // namespace lve
