@@ -19,11 +19,12 @@ LVEVulkanSwapChain::LVEVulkanSwapChain(LVEVulkanDevice &deviceRef,
 LVEVulkanSwapChain::LVEVulkanSwapChain(
 	LVEVulkanDevice &deviceRef, VkExtent2D extent,
 	std::shared_ptr<LVEVulkanSwapChain> previousSwapchain)
-	: vulkanDevice{deviceRef}, windowExtent{extent} {
+	: vulkanDevice{deviceRef}, windowExtent{extent},
+	  oldSwapChain{previousSwapchain} {
 	init();
 
 	// Clean up oldSwapChain since it is no longer needed.
-	oldSwapChain == nullptr;
+	oldSwapChain = nullptr;
 }
 
 void LVEVulkanSwapChain::init() {
