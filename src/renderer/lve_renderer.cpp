@@ -29,22 +29,27 @@ void LVERenderer::recreateSwapChain() {
 	}
 	vkDeviceWaitIdle(lveVulkanDevice.device());
 
-	// TODO: replace this
-	lveVulkanSwapChain = nullptr;
-
 	if (lveVulkanSwapChain == nullptr) {
 		lveVulkanSwapChain =
 			std::make_unique<LVEVulkanSwapChain>(lveVulkanDevice, extent);
 	} else {
+		std::shared_ptr<LVEVulkanSwapChain> oldVulkanSwapChain =
+			std::move(lveVulkanSwapChain);
 		lveVulkanSwapChain = std::make_unique<LVEVulkanSwapChain>(
-			lveVulkanDevice, extent, std::move(lveVulkanSwapChain));
+			lveVulkanDevice, extent, oldVulkanSwapChain);
+
+		if (!oldVulkanSwapChain->compareSwapFormats(
+				*lveVulkanSwapChain.get())) {
+			// TODO: callback instead of error
+			throw std::runtime_error(
+				"Swap chain image(or depth) format has changed!");
+		}
+
 		if (lveVulkanSwapChain->imageCount() != vulkanCommandBuffers.size()) {
 			freeVulkanCommandBuffers();
 			createVulkanCommandBuffers();
 		}
 	}
-
-	// createVulkanPipeline();
 }
 
 void LVERenderer::createVulkanCommandBuffers() {

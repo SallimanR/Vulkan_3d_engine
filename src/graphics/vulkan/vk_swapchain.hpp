@@ -42,6 +42,11 @@ class LVEVulkanSwapChain {
 	VkResult submitCommandBuffers(const VkCommandBuffer *buffers,
 								  uint32_t *imageIndex);
 
+	bool compareSwapFormats(const LVEVulkanSwapChain &swapChain) const {
+		return swapChain.swapChainDepthFormat == swapChainDepthFormat &&
+			   swapChain.swapChainImageFormat == swapChainImageFormat;
+	};
+
   private:
 	void init();
 
@@ -73,6 +78,7 @@ class LVEVulkanSwapChain {
 
 	VkSwapchainKHR swapChain;
 	VkFormat swapChainImageFormat;
+	VkFormat swapChainDepthFormat;
 	VkExtent2D swapChainExtent;
 	std::shared_ptr<LVEVulkanSwapChain> oldSwapChain;
 

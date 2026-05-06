@@ -180,8 +180,9 @@ void LVEVulkanSwapChain::createSwapChain() {
 	createInfo.presentMode = presentMode;
 	createInfo.clipped = VK_TRUE;
 
-	if (createInfo.oldSwapchain == nullptr) {
+	if (oldSwapChain == nullptr) {
 		createInfo.oldSwapchain = VK_NULL_HANDLE;
+
 	} else {
 		createInfo.oldSwapchain = oldSwapChain->swapChain;
 	}
@@ -317,6 +318,7 @@ void LVEVulkanSwapChain::createFramebuffers() {
 
 void LVEVulkanSwapChain::createDepthResources() {
 	VkFormat depthFormat = findDepthFormat();
+	swapChainDepthFormat = depthFormat;
 	VkExtent2D swapChainExtent = getSwapChainExtent();
 
 	depthImages.resize(imageCount());
