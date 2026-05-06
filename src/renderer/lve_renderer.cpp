@@ -44,16 +44,11 @@ void LVERenderer::recreateSwapChain() {
 			throw std::runtime_error(
 				"Swap chain image(or depth) format has changed!");
 		}
-
-		if (lveVulkanSwapChain->imageCount() != vulkanCommandBuffers.size()) {
-			freeVulkanCommandBuffers();
-			createVulkanCommandBuffers();
-		}
 	}
 }
 
 void LVERenderer::createVulkanCommandBuffers() {
-	vulkanCommandBuffers.resize(lveVulkanSwapChain->imageCount());
+	vulkanCommandBuffers.resize(LVEVulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
 
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -121,6 +116,8 @@ void LVERenderer::endFrame() {
 	}
 
 	isFrameStarted = false;
+	currentFrameIndex =
+		(currentFrameIndex + 1) % LVEVulkanSwapChain::MAX_FRAMES_IN_FLIGHT;
 }
 
 void LVERenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {

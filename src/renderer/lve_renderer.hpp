@@ -33,7 +33,14 @@ class LVERenderer {
 	VkCommandBuffer getCurrentCommandBuffer() const {
 		assert(isFrameStarted &&
 			   "Cannot get command buffer when frame not in progress");
-		return vulkanCommandBuffers[currentImageIndex];
+		return vulkanCommandBuffers[currentFrameIndex];
+	}
+
+	int getFrameIndex() const {
+		assert(isFrameStarted &&
+			   "Cannot get frame index when frame not in progress");
+
+		return currentFrameIndex;
 	}
 
   private:
@@ -48,6 +55,7 @@ class LVERenderer {
 	std::vector<VkCommandBuffer> vulkanCommandBuffers;
 
 	uint32_t currentImageIndex;
+	int currentFrameIndex{0};
 	bool isFrameStarted = false;
 };
 
