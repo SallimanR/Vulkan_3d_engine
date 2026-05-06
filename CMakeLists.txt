@@ -80,3 +80,9 @@ add_custom_target(
 )
 
 add_dependencies(vulkan-tutorial Shaders)
+
+# Enable all warnings
+target_compile_options(vulkan-tutorial PRIVATE
+    -Wall -Wextra -Wpedantic
+    $<$<CXX_COMPILER_ID:MSVC>:/W4>
+)
