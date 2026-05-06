@@ -1,6 +1,6 @@
 #include "vulkan_app.hpp"
 
-#include "src/render_system.hpp"
+#include "render_system.hpp"
 
 #include <utility>
 #define GLM_FORCE_RADIANS
