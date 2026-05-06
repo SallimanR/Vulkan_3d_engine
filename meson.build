@@ -7,9 +7,7 @@ cc = meson.get_compiler('cpp')
 vulkan_dep = dependency('vulkan')
 glfw_dep = dependency('glfw3')
 
-sources = files(
-  'src/main.cpp',
-  'src/vulkan_app.cpp',
+engine_sources = files(
   'src/platform/lve_window.cpp',
   'src/graphics/vulkan/vk_device.cpp',
   'src/graphics/vulkan/vk_pipeline.cpp',
@@ -18,7 +16,19 @@ sources = files(
   'src/renderer/lve_renderer.cpp',
 )
 
+exe_sources = files(
+  'src/main.cpp',
+  'src/vulkan_app.cpp',
+  'src/render_system.cpp',
+)
+
+engine_lib = shared_library('engine',
+  engine_sources,
+  dependencies: [vulkan_dep, glfw_dep]
+)
+
 exe = executable('app', 
-  sources,
+  exe_sources,
+  link_with: engine_lib,
   dependencies: [vulkan_dep, glfw_dep],
 )
