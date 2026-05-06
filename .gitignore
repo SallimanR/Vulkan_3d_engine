@@ -1,6 +1,7 @@
 # bin directories:
-[Bb]uild/
+[Bb]uild*/
 [Bb]in/
+compile_commands.json
 
 # clangd:
 .cache/
