@@ -1,10 +1,9 @@
 #pragma once
 
-#include "engine/core/lve_object.hpp"
-#include "engine/graphics/vulkan/vk_device.hpp"
-#include "engine/renderer/lve_renderer.hpp"
-
-#include "engine/platform/lve_window.hpp"
+#include "../engine/core/lve_object.hpp"
+#include "../engine/graphics/vulkan/vk_device.hpp"
+#include "../engine/platform/lve_window.hpp"
+#include "../engine/renderer/lve_renderer.hpp"
 
 #include <vector>
 

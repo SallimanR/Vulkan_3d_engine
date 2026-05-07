@@ -1,8 +1,8 @@
 #pragma once
 
-#include "engine/core/lve_object.hpp"
-#include "engine/graphics/vulkan/vk_device.hpp"
-#include "engine/graphics/vulkan/vk_pipeline.hpp"
+#include "../engine/core/lve_object.hpp"
+#include "../engine/graphics/vulkan/vk_device.hpp"
+#include "../engine/graphics/vulkan/vk_pipeline.hpp"
 
 #include <memory>
 #include <vector>
