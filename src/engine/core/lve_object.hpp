@@ -17,7 +17,7 @@ struct Transform2dComponent {
 		const float sinRotation = glm::sin(rotation);
 		const float cosRotation = glm::cos(rotation);
 
-		// NOTE: Takes matrices takes columns, not rows
+		// NOTE: matrices takes columns, not rows
 		glm::mat2 rotationMatrix{{cosRotation, sinRotation},
 								 {-sinRotation, cosRotation}};
 		glm::mat2 scaleMatrix{{scale.x, .0f}, {.0f, scale.y}};
