@@ -1,8 +1,8 @@
 #pragma once
 
-#include "core/lve_object.hpp"
-#include "graphics/vulkan/vk_device.hpp"
-#include "graphics/vulkan/vk_pipeline.hpp"
+#include "engine/core/lve_object.hpp"
+#include "engine/graphics/vulkan/vk_device.hpp"
+#include "engine/graphics/vulkan/vk_pipeline.hpp"
 
 #include <memory>
 #include <vector>
@@ -18,7 +18,7 @@ class RenderSystem {
 	RenderSystem &operator=(const RenderSystem &) = delete;
 
 	void render_objects(VkCommandBuffer commandBuffer,
-					   std::vector<LVEObject> &objects);
+						std::vector<LVEObject> &objects);
 
   private:
 	void create_vulkan_pipeline_layout();

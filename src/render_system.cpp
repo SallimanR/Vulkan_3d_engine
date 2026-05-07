@@ -1,6 +1,6 @@
 #include "render_system.hpp"
 
-#include "graphics/vulkan/vk_pipeline.hpp"
+#include "engine/graphics/vulkan/vk_pipeline.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -66,7 +66,7 @@ void RenderSystem::create_vulkan_pipeline(VkRenderPass renderPass) {
 }
 
 void RenderSystem::render_objects(VkCommandBuffer commandBuffer,
-								 std::vector<LVEObject> &objects) {
+								  std::vector<LVEObject> &objects) {
 	lveVulkanPipeline->bind(commandBuffer);
 
 	for (auto &obj : objects) {
