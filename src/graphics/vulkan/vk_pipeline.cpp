@@ -17,7 +17,7 @@ LVEVulkanPipeline::LVEVulkanPipeline(LVEVulkanDevice &device,
 									 const std::string &fragFilePath,
 									 const VulkanPipelineConfigInfo &configInfo)
 	: vulkanDevice{device} {
-	createGraphicsPipeline(vertFilePath, fragFilePath, configInfo);
+	create_graphics_pipeline(vertFilePath, fragFilePath, configInfo);
 }
 
 LVEVulkanPipeline::~LVEVulkanPipeline() {
@@ -26,7 +26,7 @@ LVEVulkanPipeline::~LVEVulkanPipeline() {
 	vkDestroyPipeline(vulkanDevice.device(), graphicsPipeline, nullptr);
 }
 
-std::vector<char> LVEVulkanPipeline::readFile(const std::string &filePath) {
+std::vector<char> LVEVulkanPipeline::read_file(const std::string &filePath) {
 	std::ifstream file{filePath, std::ios::ate | std::ios::binary};
 
 	if (!file.is_open()) {
@@ -41,7 +41,7 @@ std::vector<char> LVEVulkanPipeline::readFile(const std::string &filePath) {
 	return buffer;
 }
 
-void LVEVulkanPipeline::createGraphicsPipeline(
+void LVEVulkanPipeline::create_graphics_pipeline(
 	const std::string &vertFilePath, const std::string &fragFilePath,
 	const VulkanPipelineConfigInfo &configInfo) {
 	assert(configInfo.pipelineLayout != VK_NULL_HANDLE &&
@@ -50,11 +50,11 @@ void LVEVulkanPipeline::createGraphicsPipeline(
 	assert(configInfo.renderPass != VK_NULL_HANDLE &&
 		   "Cannot create graphics pipeline: no renderPass provided in config "
 		   "info");
-	auto vertCode = readFile(vertFilePath);
-	auto fragCode = readFile(fragFilePath);
+	auto vertCode = read_file(vertFilePath);
+	auto fragCode = read_file(fragFilePath);
 
-	createShaderModule(vertCode, &vertShaderModule);
-	createShaderModule(fragCode, &fragShaderModule);
+	create_shader_module(vertCode, &vertShaderModule);
+	create_shader_module(fragCode, &fragShaderModule);
 
 	VkPipelineShaderStageCreateInfo shaderStages[2];
 	shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -72,9 +72,9 @@ void LVEVulkanPipeline::createGraphicsPipeline(
 	shaderStages[1].pNext = nullptr;
 	shaderStages[1].pSpecializationInfo = nullptr;
 
-	auto bindingDescriptions = LVEVulkanModel::Vertex::getBindingDescription();
+	auto bindingDescriptions = LVEVulkanModel::Vertex::get_binding_description();
 	auto attributeDescriptions =
-		LVEVulkanModel::Vertex::getAttributeDescription();
+		LVEVulkanModel::Vertex::get_attribute_description();
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType =
 		VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -112,7 +112,7 @@ void LVEVulkanPipeline::createGraphicsPipeline(
 	}
 }
 
-void LVEVulkanPipeline::createShaderModule(const std::vector<char> &code,
+void LVEVulkanPipeline::create_shader_module(const std::vector<char> &code,
 										   VkShaderModule *shaderModule) {
 	VkShaderModuleCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -130,7 +130,7 @@ void LVEVulkanPipeline::bind(VkCommandBuffer commandBuffer) {
 					  graphicsPipeline);
 }
 
-void LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(
+void LVEVulkanPipeline::default_vulkan_pipeline_config_info(
 	VulkanPipelineConfigInfo &configInfo) {
 	configInfo.inputAssemblyInfo.sType =
 		VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;

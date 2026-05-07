@@ -9,7 +9,7 @@ namespace lve {
 
 LVEWindow::LVEWindow(int w, int h, std::string name)
 	: width{w}, height{h}, windowName{name} {
-	initWindow();
+	init_window();
 }
 
 LVEWindow::~LVEWindow() {
@@ -17,7 +17,7 @@ LVEWindow::~LVEWindow() {
 	glfwTerminate();
 }
 
-void LVEWindow::initWindow() {
+void LVEWindow::init_window() {
 	glfwSetErrorCallback([](int error, const char *desc) {
 		std::cerr << "GLFW error " << error << ": " << desc << std::endl;
 	});
@@ -38,17 +38,17 @@ void LVEWindow::initWindow() {
 		throw std::runtime_error("glfwCreateWindow() returned NULL");
 	}
 	glfwSetWindowUserPointer(window, this);
-	glfwSetFramebufferSizeCallback(window, frameBufferResizedCallback);
+	glfwSetFramebufferSizeCallback(window, frame_buffer_resized_callback);
 }
 
-void LVEWindow::createWindowSurface(VkInstance instace, VkSurfaceKHR *surface) {
+void LVEWindow::create_window_surface(VkInstance instace, VkSurfaceKHR *surface) {
 	if (glfwCreateWindowSurface(instace, window, nullptr, surface) !=
 		VK_SUCCESS) {
 		throw std::runtime_error("failed to create window surface");
 	}
 }
 
-void LVEWindow::frameBufferResizedCallback(GLFWwindow *window, int width,
+void LVEWindow::frame_buffer_resized_callback(GLFWwindow *window, int width,
 										   int height) {
 	auto lveWindow =
 		reinterpret_cast<LVEWindow *>(glfwGetWindowUserPointer(window));

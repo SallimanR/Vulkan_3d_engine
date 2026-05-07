@@ -42,16 +42,16 @@ class LVEVulkanPipeline {
 
 	void bind(VkCommandBuffer commandBuffer);
 	static void
-	defaultVulkanPipelineConfigInfo(VulkanPipelineConfigInfo &configInfo);
+	default_vulkan_pipeline_config_info(VulkanPipelineConfigInfo &configInfo);
 
   private:
-	static std::vector<char> readFile(const std::string &filePath);
+	static std::vector<char> read_file(const std::string &filePath);
 
-	void createGraphicsPipeline(const std::string &vertFilePath,
+	void create_graphics_pipeline(const std::string &vertFilePath,
 								const std::string &fragFilePath,
 								const VulkanPipelineConfigInfo &configInfo);
 
-	void createShaderModule(const std::vector<char> &code,
+	void create_shader_module(const std::vector<char> &code,
 							VkShaderModule *shaderModule);
 
 	LVEVulkanDevice &vulkanDevice;

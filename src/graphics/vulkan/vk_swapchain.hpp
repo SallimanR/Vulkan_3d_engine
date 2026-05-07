@@ -21,28 +21,28 @@ class LVEVulkanSwapChain {
 	LVEVulkanSwapChain(const LVEVulkanSwapChain &) = delete;
 	LVEVulkanSwapChain operator=(const LVEVulkanSwapChain &) = delete;
 
-	VkFramebuffer getFramebuffer(int index) {
+	VkFramebuffer get_framebuffer(int index) {
 		return swapChainFramebuffers[index];
 	}
-	VkRenderPass getRenderPass() { return renderPass; }
-	VkImageView getImageView(int index) { return swapChainImageViews[index]; }
-	size_t imageCount() { return swapChainImageViews.size(); }
-	VkFormat getSwapChainImageFormat() { return swapChainImageFormat; }
-	VkExtent2D getSwapChainExtent() { return swapChainExtent; }
+	VkRenderPass get_render_pass() { return renderPass; }
+	VkImageView get_image_view(int index) { return swapChainImageViews[index]; }
+	size_t image_count() { return swapChainImageViews.size(); }
+	VkFormat get_swap_chain_image_format() { return swapChainImageFormat; }
+	VkExtent2D get_swap_chain_extent() { return swapChainExtent; }
 	uint32_t width() { return swapChainExtent.width; }
 	uint32_t height() { return swapChainExtent.height; }
 
-	float extentAspectRatio() {
+	float extent_aspect_ratio() {
 		return static_cast<float>(swapChainExtent.width) /
 			   static_cast<float>(swapChainExtent.height);
 	}
-	VkFormat findDepthFormat();
+	VkFormat find_depth_format();
 
-	VkResult acquireNextImage(uint32_t *imageIndex);
-	VkResult submitCommandBuffers(const VkCommandBuffer *buffers,
+	VkResult acquire_next_image(uint32_t *imageIndex);
+	VkResult submit_command_buffers(const VkCommandBuffer *buffers,
 								  uint32_t *imageIndex);
 
-	bool compareSwapFormats(const LVEVulkanSwapChain &swapChain) const {
+	bool compare_swap_formats(const LVEVulkanSwapChain &swapChain) const {
 		return swapChain.swapChainDepthFormat == swapChainDepthFormat &&
 			   swapChain.swapChainImageFormat == swapChainImageFormat;
 	};
@@ -50,19 +50,19 @@ class LVEVulkanSwapChain {
   private:
 	void init();
 
-	void createSwapChain();
-	void createImageViews();
-	void createDepthResources();
-	void createRenderPass();
-	void createFramebuffers();
-	void createSyncObjects();
+	void create_swap_chain();
+	void create_image_views();
+	void create_depth_resources();
+	void create_render_pass();
+	void create_framebuffers();
+	void create_sync_objects();
 
 	// Helper functions
-	VkSurfaceFormatKHR chooseSwapSurfaceFormat(
+	VkSurfaceFormatKHR choose_swap_surface_format(
 		const std::vector<VkSurfaceFormatKHR> &availableFormats);
-	VkPresentModeKHR chooseSwapPresentMode(
+	VkPresentModeKHR choose_swap_present_mode(
 		const std::vector<VkPresentModeKHR> &availablePresentModes);
-	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
+	VkExtent2D choose_swap_extent(const VkSurfaceCapabilitiesKHR &capabilities);
 
 	std::vector<VkFramebuffer> swapChainFramebuffers;
 	VkRenderPass renderPass;

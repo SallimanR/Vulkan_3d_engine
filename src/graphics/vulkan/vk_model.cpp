@@ -12,7 +12,7 @@ namespace lve {
 LVEVulkanModel::LVEVulkanModel(LVEVulkanDevice &device,
 							   const std::vector<Vertex> &verticies)
 	: vulkanDevice{device} {
-	createVertexBuffers(verticies);
+	create_vertex_buffers(verticies);
 }
 
 LVEVulkanModel::~LVEVulkanModel() {
@@ -20,11 +20,11 @@ LVEVulkanModel::~LVEVulkanModel() {
 	vkFreeMemory(vulkanDevice.device(), vertexBufferMemory, nullptr);
 }
 
-void LVEVulkanModel::createVertexBuffers(const std::vector<Vertex> &verticies) {
+void LVEVulkanModel::create_vertex_buffers(const std::vector<Vertex> &verticies) {
 	vertexCount = static_cast<uint32_t>(verticies.size());
 	assert(vertexCount >= 3 && "Vertex count must be at least 3");
 	VkDeviceSize vertexBufferSize = sizeof(verticies[0]) * vertexCount;
-	vulkanDevice.createBuffer(vertexBufferSize,
+	vulkanDevice.create_buffer(vertexBufferSize,
 							  VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 							  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 								  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -48,7 +48,7 @@ void LVEVulkanModel::bind(VkCommandBuffer commandBuffer) {
 }
 
 std::vector<VkVertexInputBindingDescription>
-LVEVulkanModel::Vertex::getBindingDescription() {
+LVEVulkanModel::Vertex::get_binding_description() {
 	std::vector<VkVertexInputBindingDescription> bindingDescriptions(1);
 	bindingDescriptions[0].binding = 0;
 	bindingDescriptions[0].stride = sizeof(Vertex);
@@ -57,7 +57,7 @@ LVEVulkanModel::Vertex::getBindingDescription() {
 }
 
 std::vector<VkVertexInputAttributeDescription>
-LVEVulkanModel::Vertex::getAttributeDescription() {
+LVEVulkanModel::Vertex::get_attribute_description() {
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions(2);
 	attributeDescriptions[0].binding = 0;
 	attributeDescriptions[0].location = 0;

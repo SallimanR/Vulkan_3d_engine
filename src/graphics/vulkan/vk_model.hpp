@@ -19,9 +19,9 @@ class LVEVulkanModel {
 		glm::vec3 color;
 
 		static std::vector<VkVertexInputBindingDescription>
-		getBindingDescription();
+		get_binding_description();
 		static std::vector<VkVertexInputAttributeDescription>
-		getAttributeDescription();
+		get_attribute_description();
 	};
 
 	LVEVulkanModel(LVEVulkanDevice &device,
@@ -35,7 +35,7 @@ class LVEVulkanModel {
 	void draw(VkCommandBuffer commandBuffer);
 
   private:
-	void createVertexBuffers(const std::vector<Vertex> &verticies);
+	void create_vertex_buffers(const std::vector<Vertex> &verticies);
 
 	LVEVulkanDevice &vulkanDevice;
 	VkBuffer vertexBuffer;

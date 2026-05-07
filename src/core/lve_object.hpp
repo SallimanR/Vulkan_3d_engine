@@ -33,7 +33,7 @@ class LVEObject {
   public:
 	using id_t = unsigned int;
 
-	static LVEObject createObject() {
+	static LVEObject create_object() {
 		static id_t currentId = 0;
 		return LVEObject{currentId++};
 	}
@@ -43,7 +43,7 @@ class LVEObject {
 	LVEObject(LVEObject &&) = default;
 	LVEObject &operator=(LVEObject &&) = default;
 
-	id_t getID() const { return id; }
+	id_t get_id() const { return id; }
 
 	std::shared_ptr<LVEVulkanModel> model{};
 	glm::vec3 color{};

@@ -24,7 +24,7 @@ class LVEVulkanApp {
 	void run();
 
   private:
-	void loadObjects();
+	void load_objects();
 
 	LVEWindow lveWindow{WIDTH, HEIGHT, "C++ Vulkan"};
 	LVEVulkanDevice lveVulkanDevice{lveWindow};

@@ -14,27 +14,27 @@
 
 namespace lve {
 
-LVEVulkanApp::LVEVulkanApp() { loadObjects(); }
+LVEVulkanApp::LVEVulkanApp() { load_objects(); }
 
 LVEVulkanApp::~LVEVulkanApp() {}
 
 void LVEVulkanApp::run() {
 	RenderSystem renderSystem{lveVulkanDevice,
-							  lveRenderer.getSwapchainRenderPass()};
+							  lveRenderer.get_swapchain_render_pass()};
 
-	while (!lveWindow.shouldClose()) {
+	while (!lveWindow.should_close()) {
 		glfwPollEvents();
 
-		if (auto commandBuffer = lveRenderer.beginFrame()) {
-			lveRenderer.beginSwapChainRenderPass(*commandBuffer);
-			renderSystem.renderObjects(*commandBuffer, objects);
-			lveRenderer.endSwapChainRenderPass(*commandBuffer);
-			lveRenderer.endFrame();
+		if (auto commandBuffer = lveRenderer.begin_frame()) {
+			lveRenderer.begin_swap_chain_render_pass(*commandBuffer);
+			renderSystem.render_objects(*commandBuffer, objects);
+			lveRenderer.end_swap_chain_render_pass(*commandBuffer);
+			lveRenderer.end_frame();
 		}
 	}
 }
 
-void LVEVulkanApp::loadObjects() {
+void LVEVulkanApp::load_objects() {
 	std::vector<LVEVulkanModel::Vertex> verticies = {
 		{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
 		{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
@@ -43,7 +43,7 @@ void LVEVulkanApp::loadObjects() {
 	auto lveModel =
 		std::make_shared<LVEVulkanModel>(lveVulkanDevice, verticies);
 
-	auto triangle = LVEObject::createObject();
+	auto triangle = LVEObject::create_object();
 	triangle.model = lveModel;
 	triangle.color = {.1f, .8f, .1f};
 	triangle.transform2d.translation.x = .2f;

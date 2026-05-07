@@ -17,12 +17,12 @@ class RenderSystem {
 	RenderSystem(const RenderSystem &) = delete;
 	RenderSystem &operator=(const RenderSystem &) = delete;
 
-	void renderObjects(VkCommandBuffer commandBuffer,
+	void render_objects(VkCommandBuffer commandBuffer,
 					   std::vector<LVEObject> &objects);
 
   private:
-	void createVulkanPipelineLayout();
-	void createVulkanPipeline(VkRenderPass renderPass);
+	void create_vulkan_pipeline_layout();
+	void create_vulkan_pipeline(VkRenderPass renderPass);
 
 	LVEVulkanDevice &lveVulkanDevice;
 

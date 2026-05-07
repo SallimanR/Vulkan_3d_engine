@@ -17,18 +17,18 @@ class LVEWindow {
 	LVEWindow(const LVEWindow &) = delete;
 	LVEWindow &operator=(const LVEWindow &) = delete;
 
-	bool shouldClose() { return glfwWindowShouldClose(window); }
-	VkExtent2D getExtent() {
+	bool should_close() { return glfwWindowShouldClose(window); }
+	VkExtent2D get_extent() {
 		return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 	}
-	bool wasWindowResized() { return isFrameBufferResized; }
-	void resetWindowResizedFlag() { isFrameBufferResized = false; }
+	bool was_window_resized() { return isFrameBufferResized; }
+	void reset_window_resized_flag() { isFrameBufferResized = false; }
 
-	void createWindowSurface(VkInstance instace, VkSurfaceKHR *surface);
+	void create_window_surface(VkInstance instace, VkSurfaceKHR *surface);
 
   private:
-	void initWindow();
-	static void frameBufferResizedCallback(GLFWwindow *window, int width,
+	void init_window();
+	static void frame_buffer_resized_callback(GLFWwindow *window, int width,
 										   int height);
 
 	int width;

@@ -28,12 +28,12 @@ LVEVulkanSwapChain::LVEVulkanSwapChain(
 }
 
 void LVEVulkanSwapChain::init() {
-	createSwapChain();
-	createImageViews();
-	createRenderPass();
-	createDepthResources();
-	createFramebuffers();
-	createSyncObjects();
+	create_swap_chain();
+	create_image_views();
+	create_render_pass();
+	create_depth_resources();
+	create_framebuffers();
+	create_sync_objects();
 }
 
 LVEVulkanSwapChain::~LVEVulkanSwapChain() {
@@ -69,7 +69,7 @@ LVEVulkanSwapChain::~LVEVulkanSwapChain() {
 	}
 }
 
-VkResult LVEVulkanSwapChain::acquireNextImage(uint32_t *imageIndex) {
+VkResult LVEVulkanSwapChain::acquire_next_image(uint32_t *imageIndex) {
 	vkWaitForFences(vulkanDevice.device(), 1, &inFlightFences[currentFrame],
 					VK_TRUE, std::numeric_limits<uint64_t>::max());
 
@@ -83,7 +83,7 @@ VkResult LVEVulkanSwapChain::acquireNextImage(uint32_t *imageIndex) {
 }
 
 VkResult
-LVEVulkanSwapChain::submitCommandBuffers(const VkCommandBuffer *buffers,
+LVEVulkanSwapChain::submit_command_buffers(const VkCommandBuffer *buffers,
 										 uint32_t *imageIndex) {
 	if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
 		vkWaitForFences(vulkanDevice.device(), 1, &imagesInFlight[*imageIndex],
@@ -109,7 +109,7 @@ LVEVulkanSwapChain::submitCommandBuffers(const VkCommandBuffer *buffers,
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
 	vkResetFences(vulkanDevice.device(), 1, &inFlightFences[currentFrame]);
-	if (vkQueueSubmit(vulkanDevice.graphicsQueue(), 1, &submitInfo,
+	if (vkQueueSubmit(vulkanDevice.graphics_queue(), 1, &submitInfo,
 					  inFlightFences[currentFrame]) != VK_SUCCESS) {
 		throw std::runtime_error("failed to submit draw command buffer!");
 	}
@@ -126,22 +126,22 @@ LVEVulkanSwapChain::submitCommandBuffers(const VkCommandBuffer *buffers,
 
 	presentInfo.pImageIndices = imageIndex;
 
-	auto result = vkQueuePresentKHR(vulkanDevice.presentQueue(), &presentInfo);
+	auto result = vkQueuePresentKHR(vulkanDevice.present_queue(), &presentInfo);
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
 	return result;
 }
 
-void LVEVulkanSwapChain::createSwapChain() {
+void LVEVulkanSwapChain::create_swap_chain() {
 	SwapChainSupportDetails swapChainSupport =
-		vulkanDevice.getSwapChainSupport();
+		vulkanDevice.get_swap_chain_support();
 
 	VkSurfaceFormatKHR surfaceFormat =
-		chooseSwapSurfaceFormat(swapChainSupport.formats);
+		choose_swap_surface_format(swapChainSupport.formats);
 	VkPresentModeKHR presentMode =
-		chooseSwapPresentMode(swapChainSupport.presentModes);
-	VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+		choose_swap_present_mode(swapChainSupport.presentModes);
+	VkExtent2D extent = choose_swap_extent(swapChainSupport.capabilities);
 
 	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
 	if (swapChainSupport.capabilities.maxImageCount > 0 &&
@@ -160,7 +160,7 @@ void LVEVulkanSwapChain::createSwapChain() {
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	QueueFamilyIndices indices = vulkanDevice.findPhysicalQueueFamilies();
+	QueueFamilyIndices indices = vulkanDevice.find_physical_queue_families();
 	uint32_t queueFamilyIndices[] = {indices.graphicsFamily,
 									 indices.presentFamily};
 
@@ -207,7 +207,7 @@ void LVEVulkanSwapChain::createSwapChain() {
 	swapChainExtent = extent;
 }
 
-void LVEVulkanSwapChain::createImageViews() {
+void LVEVulkanSwapChain::create_image_views() {
 	swapChainImageViews.resize(swapChainImages.size());
 	for (size_t i = 0; i < swapChainImages.size(); i++) {
 		VkImageViewCreateInfo viewInfo{};
@@ -228,9 +228,9 @@ void LVEVulkanSwapChain::createImageViews() {
 	}
 }
 
-void LVEVulkanSwapChain::createRenderPass() {
+void LVEVulkanSwapChain::create_render_pass() {
 	VkAttachmentDescription depthAttachment{};
-	depthAttachment.format = findDepthFormat();
+	depthAttachment.format = find_depth_format();
 	depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -246,7 +246,7 @@ void LVEVulkanSwapChain::createRenderPass() {
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 	VkAttachmentDescription colorAttachment = {};
-	colorAttachment.format = getSwapChainImageFormat();
+	colorAttachment.format = get_swap_chain_image_format();
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -291,13 +291,13 @@ void LVEVulkanSwapChain::createRenderPass() {
 	}
 }
 
-void LVEVulkanSwapChain::createFramebuffers() {
-	swapChainFramebuffers.resize(imageCount());
-	for (size_t i = 0; i < imageCount(); i++) {
+void LVEVulkanSwapChain::create_framebuffers() {
+	swapChainFramebuffers.resize(image_count());
+	for (size_t i = 0; i < image_count(); i++) {
 		std::array<VkImageView, 2> attachments = {swapChainImageViews[i],
 												  depthImageViews[i]};
 
-		VkExtent2D swapChainExtent = getSwapChainExtent();
+		VkExtent2D swapChainExtent = get_swap_chain_extent();
 		VkFramebufferCreateInfo framebufferInfo = {};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = renderPass;
@@ -316,14 +316,14 @@ void LVEVulkanSwapChain::createFramebuffers() {
 	}
 }
 
-void LVEVulkanSwapChain::createDepthResources() {
-	VkFormat depthFormat = findDepthFormat();
+void LVEVulkanSwapChain::create_depth_resources() {
+	VkFormat depthFormat = find_depth_format();
 	swapChainDepthFormat = depthFormat;
-	VkExtent2D swapChainExtent = getSwapChainExtent();
+	VkExtent2D swapChainExtent = get_swap_chain_extent();
 
-	depthImages.resize(imageCount());
-	depthImageMemorys.resize(imageCount());
-	depthImageViews.resize(imageCount());
+	depthImages.resize(image_count());
+	depthImageMemorys.resize(image_count());
+	depthImageViews.resize(image_count());
 
 	for (int i = 0; i < depthImages.size(); i++) {
 		VkImageCreateInfo imageInfo{};
@@ -342,7 +342,7 @@ void LVEVulkanSwapChain::createDepthResources() {
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		imageInfo.flags = 0;
 
-		vulkanDevice.createImageWithInfo(imageInfo,
+		vulkanDevice.create_image_with_info(imageInfo,
 										 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 										 depthImages[i], depthImageMemorys[i]);
 
@@ -364,11 +364,11 @@ void LVEVulkanSwapChain::createDepthResources() {
 	}
 }
 
-void LVEVulkanSwapChain::createSyncObjects() {
+void LVEVulkanSwapChain::create_sync_objects() {
 	imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-	imagesInFlight.resize(imageCount(), VK_NULL_HANDLE);
+	imagesInFlight.resize(image_count(), VK_NULL_HANDLE);
 
 	VkSemaphoreCreateInfo semaphoreInfo = {};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -390,7 +390,7 @@ void LVEVulkanSwapChain::createSyncObjects() {
 	}
 }
 
-VkSurfaceFormatKHR LVEVulkanSwapChain::chooseSwapSurfaceFormat(
+VkSurfaceFormatKHR LVEVulkanSwapChain::choose_swap_surface_format(
 	const std::vector<VkSurfaceFormatKHR> &availableFormats) {
 	for (const auto &availableFormat : availableFormats) {
 		if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
@@ -402,7 +402,7 @@ VkSurfaceFormatKHR LVEVulkanSwapChain::chooseSwapSurfaceFormat(
 	return availableFormats[0];
 }
 
-VkPresentModeKHR LVEVulkanSwapChain::chooseSwapPresentMode(
+VkPresentModeKHR LVEVulkanSwapChain::choose_swap_present_mode(
 	const std::vector<VkPresentModeKHR> &availablePresentModes) {
 	// for (const auto &availablePresentMode : availablePresentModes) {
 	// 	if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
@@ -422,7 +422,7 @@ VkPresentModeKHR LVEVulkanSwapChain::chooseSwapPresentMode(
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D LVEVulkanSwapChain::chooseSwapExtent(
+VkExtent2D LVEVulkanSwapChain::choose_swap_extent(
 	const VkSurfaceCapabilitiesKHR &capabilities) {
 	if (capabilities.currentExtent.width !=
 		std::numeric_limits<uint32_t>::max()) {
@@ -440,8 +440,8 @@ VkExtent2D LVEVulkanSwapChain::chooseSwapExtent(
 	}
 }
 
-VkFormat LVEVulkanSwapChain::findDepthFormat() {
-	return vulkanDevice.findSupportedFormat(
+VkFormat LVEVulkanSwapChain::find_depth_format() {
+	return vulkanDevice.find_supported_format(
 		{VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
 		 VK_FORMAT_D24_UNORM_S8_UINT},
 		VK_IMAGE_TILING_OPTIMAL,

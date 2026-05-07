@@ -24,8 +24,8 @@ struct VulkanPushConstantData {
 
 RenderSystem::RenderSystem(LVEVulkanDevice &device, VkRenderPass renderPass)
 	: lveVulkanDevice{device} {
-	createVulkanPipelineLayout();
-	createVulkanPipeline(renderPass);
+	create_vulkan_pipeline_layout();
+	create_vulkan_pipeline(renderPass);
 }
 
 RenderSystem::~RenderSystem() {
@@ -33,7 +33,7 @@ RenderSystem::~RenderSystem() {
 							nullptr);
 }
 
-void RenderSystem::createVulkanPipelineLayout() {
+void RenderSystem::create_vulkan_pipeline_layout() {
 	VkPushConstantRange pushConstantRange{};
 	pushConstantRange.stageFlags =
 		VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -52,12 +52,12 @@ void RenderSystem::createVulkanPipelineLayout() {
 	}
 }
 
-void RenderSystem::createVulkanPipeline(VkRenderPass renderPass) {
+void RenderSystem::create_vulkan_pipeline(VkRenderPass renderPass) {
 	assert(vulkanPipelineLayout != nullptr &&
 		   "Cannot create pipeline before pipeline layout");
 
 	VulkanPipelineConfigInfo pipelineConfig{};
-	LVEVulkanPipeline::defaultVulkanPipelineConfigInfo(pipelineConfig);
+	LVEVulkanPipeline::default_vulkan_pipeline_config_info(pipelineConfig);
 	pipelineConfig.renderPass = renderPass;
 	pipelineConfig.pipelineLayout = vulkanPipelineLayout;
 	lveVulkanPipeline = std::make_unique<LVEVulkanPipeline>(
@@ -65,7 +65,7 @@ void RenderSystem::createVulkanPipeline(VkRenderPass renderPass) {
 		"assets/spirv/triangle.frag.spv", pipelineConfig);
 }
 
-void RenderSystem::renderObjects(VkCommandBuffer commandBuffer,
+void RenderSystem::render_objects(VkCommandBuffer commandBuffer,
 								 std::vector<LVEObject> &objects) {
 	lveVulkanPipeline->bind(commandBuffer);
 

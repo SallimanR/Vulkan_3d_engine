@@ -9,7 +9,7 @@ namespace lve {
 
 // local callback functions
 static VKAPI_ATTR VkBool32 VKAPI_CALL
-debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 			  VkDebugUtilsMessageTypeFlagsEXT messageType,
 			  const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
 			  void *pUserData) {
@@ -18,7 +18,7 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	return VK_FALSE;
 }
 
-VkResult CreateDebugUtilsMessengerEXT(
+VkResult create_debug_utils_messenger_ext(
 	VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
 	const VkAllocationCallbacks *pAllocator,
 	VkDebugUtilsMessengerEXT *pDebugMessenger) {
@@ -31,7 +31,7 @@ VkResult CreateDebugUtilsMessengerEXT(
 	}
 }
 
-void DestroyDebugUtilsMessengerEXT(VkInstance instance,
+void destroy_debug_utils_messenger_ext(VkInstance instance,
 								   VkDebugUtilsMessengerEXT debugMessenger,
 								   const VkAllocationCallbacks *pAllocator) {
 	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
@@ -43,12 +43,12 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
 
 // class member functions
 LVEVulkanDevice::LVEVulkanDevice(LVEWindow &window) : window{window} {
-	createInstance();
-	setupDebugMessenger();
-	createSurface();
-	pickPhysicalDevice();
-	createLogicalDevice();
-	createCommandPool();
+	create_instance();
+	setup_debug_messenger();
+	create_surface();
+	pick_physical_device();
+	create_logical_device();
+	create_command_pool();
 }
 
 LVEVulkanDevice::~LVEVulkanDevice() {
@@ -56,15 +56,15 @@ LVEVulkanDevice::~LVEVulkanDevice() {
 	vkDestroyDevice(device_, nullptr);
 
 	if (enableValidationLayers) {
-		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+		destroy_debug_utils_messenger_ext(instance, debugMessenger, nullptr);
 	}
 
 	vkDestroySurfaceKHR(instance, surface_, nullptr);
 	vkDestroyInstance(instance, nullptr);
 }
 
-void LVEVulkanDevice::createInstance() {
-	if (enableValidationLayers && !checkValidationLayerSupport()) {
+void LVEVulkanDevice::create_instance() {
+	if (enableValidationLayers && !check_validation_layer_support()) {
 		throw std::runtime_error(
 			"validation layers requested, but not available!");
 	}
@@ -81,7 +81,7 @@ void LVEVulkanDevice::createInstance() {
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 
-	auto extensions = getRequiredExtensions();
+	auto extensions = get_required_extensions();
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -91,7 +91,7 @@ void LVEVulkanDevice::createInstance() {
 			static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
 
-		populateDebugMessengerCreateInfo(debugCreateInfo);
+		populate_debug_messenger_create_info(debugCreateInfo);
 		createInfo.pNext =
 			(VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
 	} else {
@@ -103,10 +103,10 @@ void LVEVulkanDevice::createInstance() {
 		throw std::runtime_error("failed to create instance!");
 	}
 
-	hasGflwRequiredInstanceExtensions();
+	has_gflw_required_instance_extensions();
 }
 
-void LVEVulkanDevice::pickPhysicalDevice() {
+void LVEVulkanDevice::pick_physical_device() {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 	if (deviceCount == 0) {
@@ -117,7 +117,7 @@ void LVEVulkanDevice::pickPhysicalDevice() {
 	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
 	for (const auto &device : devices) {
-		if (isDeviceSuitable(device)) {
+		if (is_device_suitable(device)) {
 			physicalDevice = device;
 			break;
 		}
@@ -131,8 +131,8 @@ void LVEVulkanDevice::pickPhysicalDevice() {
 	std::cout << "physical device: " << properties.deviceName << std::endl;
 }
 
-void LVEVulkanDevice::createLogicalDevice() {
-	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+void LVEVulkanDevice::create_logical_device() {
+	QueueFamilyIndices indices = find_queue_families(physicalDevice);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily,
@@ -182,8 +182,8 @@ void LVEVulkanDevice::createLogicalDevice() {
 	vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
 }
 
-void LVEVulkanDevice::createCommandPool() {
-	QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
+void LVEVulkanDevice::create_command_pool() {
+	QueueFamilyIndices queueFamilyIndices = find_physical_queue_families();
 
 	VkCommandPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -197,19 +197,19 @@ void LVEVulkanDevice::createCommandPool() {
 	}
 }
 
-void LVEVulkanDevice::createSurface() {
-	window.createWindowSurface(instance, &surface_);
+void LVEVulkanDevice::create_surface() {
+	window.create_window_surface(instance, &surface_);
 }
 
-bool LVEVulkanDevice::isDeviceSuitable(VkPhysicalDevice device) {
-	QueueFamilyIndices indices = findQueueFamilies(device);
+bool LVEVulkanDevice::is_device_suitable(VkPhysicalDevice device) {
+	QueueFamilyIndices indices = find_queue_families(device);
 
-	bool extensionsSupported = checkDeviceExtensionSupport(device);
+	bool extensionsSupported = check_device_extension_support(device);
 
 	bool swapChainAdequate = false;
 	if (extensionsSupported) {
 		SwapChainSupportDetails swapChainSupport =
-			querySwapChainSupport(device);
+			query_swap_chain_support(device);
 		swapChainAdequate = !swapChainSupport.formats.empty() &&
 							!swapChainSupport.presentModes.empty();
 	}
@@ -217,11 +217,11 @@ bool LVEVulkanDevice::isDeviceSuitable(VkPhysicalDevice device) {
 	VkPhysicalDeviceFeatures supportedFeatures;
 	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
-	return indices.isComplete() && extensionsSupported && swapChainAdequate &&
+	return indices.is_complete() && extensionsSupported && swapChainAdequate &&
 		   supportedFeatures.samplerAnisotropy;
 }
 
-void LVEVulkanDevice::populateDebugMessengerCreateInfo(
+void LVEVulkanDevice::populate_debug_messenger_create_info(
 	VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
 	createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -232,23 +232,23 @@ void LVEVulkanDevice::populateDebugMessengerCreateInfo(
 	createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
 							 VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 							 VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	createInfo.pfnUserCallback = debugCallback;
+	createInfo.pfnUserCallback = debug_callback;
 	createInfo.pUserData = nullptr; // Optional
 }
 
-void LVEVulkanDevice::setupDebugMessenger() {
+void LVEVulkanDevice::setup_debug_messenger() {
 	if (!enableValidationLayers) {
 		return;
 	}
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
-	populateDebugMessengerCreateInfo(createInfo);
-	if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr,
+	populate_debug_messenger_create_info(createInfo);
+	if (create_debug_utils_messenger_ext(instance, &createInfo, nullptr,
 									 &debugMessenger) != VK_SUCCESS) {
 		throw std::runtime_error("failed to set up debug messenger!");
 	}
 }
 
-bool LVEVulkanDevice::checkValidationLayerSupport() {
+bool LVEVulkanDevice::check_validation_layer_support() {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -273,7 +273,7 @@ bool LVEVulkanDevice::checkValidationLayerSupport() {
 	return true;
 }
 
-std::vector<const char *> LVEVulkanDevice::getRequiredExtensions() {
+std::vector<const char *> LVEVulkanDevice::get_required_extensions() {
 	uint32_t glfwExtensionCount = 0;
 	const char **glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -288,7 +288,7 @@ std::vector<const char *> LVEVulkanDevice::getRequiredExtensions() {
 	return extensions;
 }
 
-void LVEVulkanDevice::hasGflwRequiredInstanceExtensions() {
+void LVEVulkanDevice::has_gflw_required_instance_extensions() {
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 	std::vector<VkExtensionProperties> extensions(extensionCount);
@@ -303,7 +303,7 @@ void LVEVulkanDevice::hasGflwRequiredInstanceExtensions() {
 	}
 
 	std::cout << "required extensions:" << std::endl;
-	auto requiredExtensions = getRequiredExtensions();
+	auto requiredExtensions = get_required_extensions();
 	for (const auto &required : requiredExtensions) {
 		std::cout << "\t" << required << std::endl;
 		if (available.find(required) == available.end()) {
@@ -312,7 +312,7 @@ void LVEVulkanDevice::hasGflwRequiredInstanceExtensions() {
 	}
 }
 
-bool LVEVulkanDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+bool LVEVulkanDevice::check_device_extension_support(VkPhysicalDevice device) {
 	uint32_t extensionCount;
 	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,
 										 nullptr);
@@ -331,7 +331,7 @@ bool LVEVulkanDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 	return requiredExtensions.empty();
 }
 
-QueueFamilyIndices LVEVulkanDevice::findQueueFamilies(VkPhysicalDevice device) {
+QueueFamilyIndices LVEVulkanDevice::find_queue_families(VkPhysicalDevice device) {
 	QueueFamilyIndices indices;
 
 	uint32_t queueFamilyCount = 0;
@@ -356,7 +356,7 @@ QueueFamilyIndices LVEVulkanDevice::findQueueFamilies(VkPhysicalDevice device) {
 			indices.presentFamily = i;
 			indices.presentFamilyHasValue = true;
 		}
-		if (indices.isComplete()) {
+		if (indices.is_complete()) {
 			break;
 		}
 
@@ -367,7 +367,7 @@ QueueFamilyIndices LVEVulkanDevice::findQueueFamilies(VkPhysicalDevice device) {
 }
 
 SwapChainSupportDetails
-LVEVulkanDevice::querySwapChainSupport(VkPhysicalDevice device) {
+LVEVulkanDevice::query_swap_chain_support(VkPhysicalDevice device) {
 	SwapChainSupportDetails details;
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_,
 											  &details.capabilities);
@@ -395,7 +395,7 @@ LVEVulkanDevice::querySwapChainSupport(VkPhysicalDevice device) {
 }
 
 VkFormat
-LVEVulkanDevice::findSupportedFormat(const std::vector<VkFormat> &candidates,
+LVEVulkanDevice::find_supported_format(const std::vector<VkFormat> &candidates,
 									 VkImageTiling tiling,
 									 VkFormatFeatureFlags features) {
 	for (VkFormat format : candidates) {
@@ -413,7 +413,7 @@ LVEVulkanDevice::findSupportedFormat(const std::vector<VkFormat> &candidates,
 	throw std::runtime_error("failed to find supported format!");
 }
 
-uint32_t LVEVulkanDevice::findMemoryType(uint32_t typeFilter,
+uint32_t LVEVulkanDevice::find_memory_type(uint32_t typeFilter,
 										 VkMemoryPropertyFlags properties) {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
@@ -428,7 +428,7 @@ uint32_t LVEVulkanDevice::findMemoryType(uint32_t typeFilter,
 	throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void LVEVulkanDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+void LVEVulkanDevice::create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
 								   VkMemoryPropertyFlags properties,
 								   VkBuffer &buffer,
 								   VkDeviceMemory &bufferMemory) {
@@ -449,7 +449,7 @@ void LVEVulkanDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex =
-		findMemoryType(memRequirements.memoryTypeBits, properties);
+		find_memory_type(memRequirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) !=
 		VK_SUCCESS) {
@@ -459,7 +459,7 @@ void LVEVulkanDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
 	vkBindBufferMemory(device_, buffer, bufferMemory, 0);
 }
 
-VkCommandBuffer LVEVulkanDevice::beginSingleTimeCommands() {
+VkCommandBuffer LVEVulkanDevice::begin_single_time_commands() {
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -477,7 +477,7 @@ VkCommandBuffer LVEVulkanDevice::beginSingleTimeCommands() {
 	return commandBuffer;
 }
 
-void LVEVulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+void LVEVulkanDevice::end_single_time_commands(VkCommandBuffer commandBuffer) {
 	vkEndCommandBuffer(commandBuffer);
 
 	VkSubmitInfo submitInfo{};
@@ -491,9 +491,9 @@ void LVEVulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
 	vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
 }
 
-void LVEVulkanDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
+void LVEVulkanDevice::copy_buffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
 								 VkDeviceSize size) {
-	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+	VkCommandBuffer commandBuffer = begin_single_time_commands();
 
 	VkBufferCopy copyRegion{};
 	copyRegion.srcOffset = 0; // Optional
@@ -501,13 +501,13 @@ void LVEVulkanDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
 	copyRegion.size = size;
 	vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-	endSingleTimeCommands(commandBuffer);
+	end_single_time_commands(commandBuffer);
 }
 
-void LVEVulkanDevice::copyBufferToImage(VkBuffer buffer, VkImage image,
+void LVEVulkanDevice::copy_buffer_to_image(VkBuffer buffer, VkImage image,
 										uint32_t width, uint32_t height,
 										uint32_t layerCount) {
-	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+	VkCommandBuffer commandBuffer = begin_single_time_commands();
 
 	VkBufferImageCopy region{};
 	region.bufferOffset = 0;
@@ -524,10 +524,10 @@ void LVEVulkanDevice::copyBufferToImage(VkBuffer buffer, VkImage image,
 
 	vkCmdCopyBufferToImage(commandBuffer, buffer, image,
 						   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-	endSingleTimeCommands(commandBuffer);
+	end_single_time_commands(commandBuffer);
 }
 
-void LVEVulkanDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo,
+void LVEVulkanDevice::create_image_with_info(const VkImageCreateInfo &imageInfo,
 										  VkMemoryPropertyFlags properties,
 										  VkImage &image,
 										  VkDeviceMemory &imageMemory) {
@@ -542,7 +542,7 @@ void LVEVulkanDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo,
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex =
-		findMemoryType(memRequirements.memoryTypeBits, properties);
+		find_memory_type(memRequirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory) !=
 		VK_SUCCESS) {

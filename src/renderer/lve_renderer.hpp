@@ -20,23 +20,23 @@ class LVERenderer {
 	LVERenderer(const LVERenderer &) = delete;
 	LVERenderer &operator=(const LVERenderer &) = delete;
 
-	VkRenderPass getSwapchainRenderPass() const {
-		return lveVulkanSwapChain->getRenderPass();
+	VkRenderPass get_swapchain_render_pass() const {
+		return lveVulkanSwapChain->get_render_pass();
 	}
-	bool isFrameInProgress() const { return isFrameStarted; }
+	bool is_frame_in_progress() const { return isFrameStarted; }
 
-	std::optional<VkCommandBuffer> beginFrame();
-	void endFrame();
-	void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
-	void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
+	std::optional<VkCommandBuffer> begin_frame();
+	void end_frame();
+	void begin_swap_chain_render_pass(VkCommandBuffer commandBuffer);
+	void end_swap_chain_render_pass(VkCommandBuffer commandBuffer);
 
-	VkCommandBuffer getCurrentCommandBuffer() const {
+	VkCommandBuffer get_current_command_buffer() const {
 		assert(isFrameStarted &&
 			   "Cannot get command buffer when frame not in progress");
 		return vulkanCommandBuffers[currentFrameIndex];
 	}
 
-	int getFrameIndex() const {
+	int get_frame_index() const {
 		assert(isFrameStarted &&
 			   "Cannot get frame index when frame not in progress");
 
@@ -44,9 +44,9 @@ class LVERenderer {
 	}
 
   private:
-	void createVulkanCommandBuffers();
-	void freeVulkanCommandBuffers();
-	void recreateSwapChain();
+	void create_vulkan_command_buffers();
+	void free_vulkan_command_buffers();
+	void recreate_swap_chain();
 
 	LVEWindow &lveWindow;
 
