@@ -84,7 +84,7 @@ VkResult LVEVulkanSwapChain::acquire_next_image(uint32_t *imageIndex) {
 
 VkResult
 LVEVulkanSwapChain::submit_command_buffers(const VkCommandBuffer *buffers,
-										 uint32_t *imageIndex) {
+										   uint32_t *imageIndex) {
 	if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE) {
 		vkWaitForFences(vulkanDevice.device(), 1, &imagesInFlight[*imageIndex],
 						VK_TRUE, UINT64_MAX);
@@ -266,13 +266,15 @@ void LVEVulkanSwapChain::create_render_pass() {
 	subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
 	VkSubpassDependency dependency = {};
-
 	dependency.dstSubpass = 0;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+							   VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+							  VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 	dependency.srcAccessMask = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+							  VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
 	std::array<VkAttachmentDescription, 2> attachments = {colorAttachment,
 														  depthAttachment};
@@ -342,9 +344,9 @@ void LVEVulkanSwapChain::create_depth_resources() {
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		imageInfo.flags = 0;
 
-		vulkanDevice.create_image_with_info(imageInfo,
-										 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-										 depthImages[i], depthImageMemorys[i]);
+		vulkanDevice.create_image_with_info(
+			imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImages[i],
+			depthImageMemorys[i]);
 
 		VkImageViewCreateInfo viewInfo{};
 		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
