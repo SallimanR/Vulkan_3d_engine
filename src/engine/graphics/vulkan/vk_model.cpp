@@ -20,15 +20,16 @@ LVEVulkanModel::~LVEVulkanModel() {
 	vkFreeMemory(vulkanDevice.device(), vertexBufferMemory, nullptr);
 }
 
-void LVEVulkanModel::create_vertex_buffers(const std::vector<Vertex> &verticies) {
+void LVEVulkanModel::create_vertex_buffers(
+	const std::vector<Vertex> &verticies) {
 	vertexCount = static_cast<uint32_t>(verticies.size());
 	assert(vertexCount >= 3 && "Vertex count must be at least 3");
 	VkDeviceSize vertexBufferSize = sizeof(verticies[0]) * vertexCount;
 	vulkanDevice.create_buffer(vertexBufferSize,
-							  VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-							  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-								  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-							  vertexBuffer, vertexBufferMemory);
+							   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+							   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+								   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+							   vertexBuffer, vertexBufferMemory);
 
 	void *data;
 	vkMapMemory(vulkanDevice.device(), vertexBufferMemory, 0, vertexBufferSize,
@@ -61,7 +62,7 @@ LVEVulkanModel::Vertex::get_attribute_description() {
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions(2);
 	attributeDescriptions[0].binding = 0;
 	attributeDescriptions[0].location = 0;
-	attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+	attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 	attributeDescriptions[0].offset = offsetof(Vertex, position);
 
 	attributeDescriptions[1].binding = 0;
