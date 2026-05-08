@@ -1,4 +1,5 @@
 #include "render_system.hpp"
+#include <glm/common.hpp>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -14,9 +15,7 @@ namespace lve {
 
 struct VulkanPushConstantData {
 	// Identity matrix, every value on main (left-up corner) diagonal is 1
-	glm::mat2 transform{1.f};
-
-	glm::vec2 offset;
+	glm::mat4 transform{1.f};
 	alignas(16) glm::vec3 color;
 };
 
@@ -59,8 +58,8 @@ void RenderSystem::create_vulkan_pipeline(VkRenderPass renderPass) {
 	pipelineConfig.renderPass = renderPass;
 	pipelineConfig.pipelineLayout = vulkanPipelineLayout;
 	lveVulkanPipeline = std::make_unique<LVEVulkanPipeline>(
-		lveVulkanDevice, "assets/spirv/triangle.vert.spv",
-		"assets/spirv/triangle.frag.spv", pipelineConfig);
+		lveVulkanDevice, "assets/spirv/cube.vert.spv",
+		"assets/spirv/cube.frag.spv", pipelineConfig);
 }
 
 void RenderSystem::render_objects(VkCommandBuffer commandBuffer,
@@ -68,10 +67,16 @@ void RenderSystem::render_objects(VkCommandBuffer commandBuffer,
 	lveVulkanPipeline->bind(commandBuffer);
 
 	for (auto &obj : objects) {
+		obj.transform.rotation.y =
+			glm::mod(obj.transform.rotation.y + 0.01f, glm::two_pi<float>());
+		obj.transform.rotation.x =
+			glm::mod(obj.transform.rotation.x + 0.005f, glm::two_pi<float>());
+		obj.transform.rotation.z =
+			glm::mod(obj.transform.rotation.z + 0.005f, glm::two_pi<float>());
+
 		VulkanPushConstantData push{};
-		push.offset = obj.transform2d.translation;
 		push.color = obj.color;
-		push.transform = obj.transform2d.mat2();
+		push.transform = obj.transform.mat4();
 
 		vkCmdPushConstants(commandBuffer, vulkanPipelineLayout,
 						   VK_SHADER_STAGE_VERTEX_BIT |

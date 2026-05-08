@@ -1,5 +1,6 @@
 #include "vulkan_app.hpp"
 
+#include "engine/graphics/vulkan/vk_model.hpp"
 #include "render_system.hpp"
 
 #include <utility>
@@ -34,23 +35,75 @@ void LVEVulkanApp::run() {
 	}
 }
 
+std::shared_ptr<LVEVulkanModel> create_cube_model(LVEVulkanDevice &device,
+												  glm::vec3 offset) {
+	std::vector<LVEVulkanModel::Vertex> verticies{
+		{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+		{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+		{{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+		{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+		{{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
+		{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+
+		// right face (yellow)
+		{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+		{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+		{{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+		{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+		{{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+		{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+
+		// top face (orange, remember y axis points down)
+		{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+		{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+		{{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+		{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+		{{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+		{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+
+		// bottom face (red)
+		{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+		{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+		{{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+		{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+		{{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+		{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+
+		// nose face (blue)
+		{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+		{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+		{{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+		{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+		{{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+		{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+
+		// tail face (green)
+		{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+		{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+		{{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+		{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+		{{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+		{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+
+	};
+
+	for (auto &v : verticies) {
+		v.position += offset;
+	}
+	return std::make_unique<LVEVulkanModel>(device, verticies);
+}
+
 void LVEVulkanApp::load_objects() {
-	std::vector<LVEVulkanModel::Vertex> verticies = {
-		{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-		{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+	auto lveModel = create_cube_model(lveVulkanDevice, {0.f, 0.f, 0.f});
 
-	auto lveModel =
-		std::make_shared<LVEVulkanModel>(lveVulkanDevice, verticies);
+	auto cube = LVEObject::create_object();
+	cube.model = lveModel;
+	// cube.color = {0.1f, 0.8f, 0.1f};
+	cube.transform.translation = {0.0f, 0.0f, 0.5f};
+	cube.transform.scale = {0.5f, 0.5f, 0.5f};
+	// cube.transform.rotation = {0.0f, 0.0f, 0.0f};
 
-	auto triangle = LVEObject::create_object();
-	triangle.model = lveModel;
-	triangle.color = {.1f, .8f, .1f};
-	triangle.transform2d.translation.x = .2f;
-	triangle.transform2d.scale = {2.f, .5f};
-	triangle.transform2d.rotation = .25f * glm::two_pi<float>();
-
-	objects.push_back(std::move(triangle));
+	objects.push_back(std::move(cube));
 }
 
 } // namespace lve
