@@ -1,9 +1,11 @@
 #include "vulkan_app.hpp"
 
 #include "../engine/graphics/vulkan/vk_model.hpp"
+#include "../engine/platform/input/lve_input_keyboard.hpp"
 #include "../engine/renderer/lve_camera.hpp"
 #include "render_system.hpp"
 
+#include <chrono>
 #include <glm/trigonometric.hpp>
 #include <utility>
 #define GLM_FORCE_RADIANS
@@ -26,11 +28,28 @@ void LVEVulkanApp::run() {
 							  lveRenderer.get_swapchain_render_pass()};
 	LVECamera camera{};
 	// camera.set_view_direction(glm::vec3{0.0f}, glm::vec3{0.5f, 0.0f, 1.0f});
-	camera.set_view_target(glm::vec3(-1.0f, -2.0f, 2.0f),
-						   glm::vec3{0.0f, 0.0f, 2.5f});
+	// camera.set_view_target(glm::vec3(-1.0f, -2.0f, 2.0f),
+	// glm::vec3{0.0f, 0.0f, 2.5f});
+
+	auto viewerObject = LVEObject::create_object();
+	KeyboardController cameraController{};
+
+	auto currentTime = std::chrono::high_resolution_clock::now();
 
 	while (!lveWindow.should_close()) {
 		glfwPollEvents();
+
+		auto newTime = std::chrono::high_resolution_clock::now();
+		float frameTime =
+			std::chrono::duration<float, std::chrono::seconds::period>(
+				newTime - currentTime)
+				.count();
+		currentTime = newTime;
+
+		cameraController.move_in_plane_xz(lveWindow.get_window_ptr(), frameTime,
+										  viewerObject);
+		camera.set_view_yxz(viewerObject.transform.translation,
+							viewerObject.transform.rotation);
 
 		float aspectRatio = lveRenderer.get_aspect_ratio();
 		// camera.set_orthographic_projection(-aspectRatio, aspectRatio, -1, 1,

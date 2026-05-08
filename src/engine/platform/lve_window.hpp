@@ -27,6 +27,8 @@ class LVEWindow {
 
 	void create_window_surface(VkInstance instace, VkSurfaceKHR *surface);
 
+	GLFWwindow *get_window_ptr() const { return window; }
+
   private:
 	void init_window();
 	static void frame_buffer_resized_callback(GLFWwindow *window, int width,
