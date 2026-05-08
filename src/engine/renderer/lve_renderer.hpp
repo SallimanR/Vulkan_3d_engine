@@ -23,6 +23,9 @@ class LVERenderer {
 	VkRenderPass get_swapchain_render_pass() const {
 		return lveVulkanSwapChain->get_render_pass();
 	}
+	float get_aspect_ratio() const {
+		return lveVulkanSwapChain->extent_aspect_ratio();
+	}
 	bool is_frame_in_progress() const { return isFrameStarted; }
 
 	std::optional<VkCommandBuffer> begin_frame();

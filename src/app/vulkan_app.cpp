@@ -1,8 +1,10 @@
 #include "vulkan_app.hpp"
 
-#include "engine/graphics/vulkan/vk_model.hpp"
+#include "../engine/graphics/vulkan/vk_model.hpp"
+#include "../engine/renderer/lve_camera.hpp"
 #include "render_system.hpp"
 
+#include <glm/trigonometric.hpp>
 #include <utility>
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -22,13 +24,21 @@ LVEVulkanApp::~LVEVulkanApp() {}
 void LVEVulkanApp::run() {
 	RenderSystem renderSystem{lveVulkanDevice,
 							  lveRenderer.get_swapchain_render_pass()};
+	LVECamera camera{};
 
 	while (!lveWindow.should_close()) {
 		glfwPollEvents();
 
+		float aspectRatio = lveRenderer.get_aspect_ratio();
+		// camera.set_orthographic_projection(-aspectRatio, aspectRatio, -1, 1,
+		// -1, 								   1);
+
+		camera.set_perspective_projection(glm::radians(50.f), aspectRatio, 0.1f,
+										  10.0f);
+
 		if (auto commandBuffer = lveRenderer.begin_frame()) {
 			lveRenderer.begin_swap_chain_render_pass(*commandBuffer);
-			renderSystem.render_objects(*commandBuffer, objects);
+			renderSystem.render_objects(*commandBuffer, objects, camera);
 			lveRenderer.end_swap_chain_render_pass(*commandBuffer);
 			lveRenderer.end_frame();
 		}
@@ -99,7 +109,7 @@ void LVEVulkanApp::load_objects() {
 	auto cube = LVEObject::create_object();
 	cube.model = lveModel;
 	// cube.color = {0.1f, 0.8f, 0.1f};
-	cube.transform.translation = {0.0f, 0.0f, 0.5f};
+	cube.transform.translation = {0.0f, 0.0f, 2.5f};
 	cube.transform.scale = {0.5f, 0.5f, 0.5f};
 	// cube.transform.rotation = {0.0f, 0.0f, 0.0f};
 

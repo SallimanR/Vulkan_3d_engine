@@ -63,7 +63,8 @@ void RenderSystem::create_vulkan_pipeline(VkRenderPass renderPass) {
 }
 
 void RenderSystem::render_objects(VkCommandBuffer commandBuffer,
-								  std::vector<LVEObject> &objects) {
+								  std::vector<LVEObject> &objects,
+								  const LVECamera &camera) {
 	lveVulkanPipeline->bind(commandBuffer);
 
 	for (auto &obj : objects) {
@@ -76,7 +77,7 @@ void RenderSystem::render_objects(VkCommandBuffer commandBuffer,
 
 		VulkanPushConstantData push{};
 		push.color = obj.color;
-		push.transform = obj.transform.mat4();
+		push.transform = camera.get_projection() * obj.transform.mat4();
 
 		vkCmdPushConstants(commandBuffer, vulkanPipelineLayout,
 						   VK_SHADER_STAGE_VERTEX_BIT |
