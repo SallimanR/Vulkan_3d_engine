@@ -25,6 +25,9 @@ void LVEVulkanApp::run() {
 	RenderSystem renderSystem{lveVulkanDevice,
 							  lveRenderer.get_swapchain_render_pass()};
 	LVECamera camera{};
+	// camera.set_view_direction(glm::vec3{0.0f}, glm::vec3{0.5f, 0.0f, 1.0f});
+	camera.set_view_target(glm::vec3(-1.0f, -2.0f, 2.0f),
+						   glm::vec3{0.0f, 0.0f, 2.5f});
 
 	while (!lveWindow.should_close()) {
 		glfwPollEvents();

@@ -67,6 +67,8 @@ void RenderSystem::render_objects(VkCommandBuffer commandBuffer,
 								  const LVECamera &camera) {
 	lveVulkanPipeline->bind(commandBuffer);
 
+	auto projectionView = camera.get_projection() * camera.get_view();
+
 	for (auto &obj : objects) {
 		obj.transform.rotation.y =
 			glm::mod(obj.transform.rotation.y + 0.01f, glm::two_pi<float>());
@@ -77,7 +79,7 @@ void RenderSystem::render_objects(VkCommandBuffer commandBuffer,
 
 		VulkanPushConstantData push{};
 		push.color = obj.color;
-		push.transform = camera.get_projection() * obj.transform.mat4();
+		push.transform = projectionView * obj.transform.mat4();
 
 		vkCmdPushConstants(commandBuffer, vulkanPipelineLayout,
 						   VK_SHADER_STAGE_VERTEX_BIT |
