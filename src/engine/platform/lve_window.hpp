@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vulkan/vulkan_core.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -29,7 +30,7 @@ class LVEWindow {
   private:
 	void init_window();
 	static void frame_buffer_resized_callback(GLFWwindow *window, int width,
-										   int height);
+											  int height);
 
 	int width;
 	int height;
