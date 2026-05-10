@@ -72,7 +72,8 @@ void LVEVulkanPipeline::create_graphics_pipeline(
 	shaderStages[1].pNext = nullptr;
 	shaderStages[1].pSpecializationInfo = nullptr;
 
-	auto bindingDescriptions = LVEVulkanModel::Vertex::get_binding_description();
+	auto bindingDescriptions =
+		LVEVulkanModel::Vertex::get_binding_description();
 	auto attributeDescriptions =
 		LVEVulkanModel::Vertex::get_attribute_description();
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
@@ -113,7 +114,7 @@ void LVEVulkanPipeline::create_graphics_pipeline(
 }
 
 void LVEVulkanPipeline::create_shader_module(const std::vector<char> &code,
-										   VkShaderModule *shaderModule) {
+											 VkShaderModule *shaderModule) {
 	VkShaderModuleCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	createInfo.codeSize = code.size();

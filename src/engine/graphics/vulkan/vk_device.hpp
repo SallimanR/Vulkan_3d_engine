@@ -48,27 +48,27 @@ class LVEVulkanDevice {
 		return query_swap_chain_support(physicalDevice);
 	}
 	uint32_t find_memory_type(uint32_t typeFilter,
-							VkMemoryPropertyFlags properties);
+							  VkMemoryPropertyFlags properties);
 	QueueFamilyIndices find_physical_queue_families() {
 		return find_queue_families(physicalDevice);
 	}
 	VkFormat find_supported_format(const std::vector<VkFormat> &candidates,
-								 VkImageTiling tiling,
-								 VkFormatFeatureFlags features);
+								   VkImageTiling tiling,
+								   VkFormatFeatureFlags features);
 
 	// Buffer Helper Functions
 	void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
-					  VkMemoryPropertyFlags properties, VkBuffer &buffer,
-					  VkDeviceMemory &bufferMemory);
+					   VkMemoryPropertyFlags properties, VkBuffer &buffer,
+					   VkDeviceMemory &bufferMemory);
 	VkCommandBuffer begin_single_time_commands();
 	void end_single_time_commands(VkCommandBuffer commandBuffer);
 	void copy_buffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width,
-						   uint32_t height, uint32_t layerCount);
+							  uint32_t height, uint32_t layerCount);
 
 	void create_image_with_info(const VkImageCreateInfo &imageInfo,
-							 VkMemoryPropertyFlags properties, VkImage &image,
-							 VkDeviceMemory &imageMemory);
+								VkMemoryPropertyFlags properties,
+								VkImage &image, VkDeviceMemory &imageMemory);
 
 	VkPhysicalDeviceProperties properties;
 

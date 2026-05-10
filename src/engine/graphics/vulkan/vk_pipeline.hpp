@@ -48,11 +48,11 @@ class LVEVulkanPipeline {
 	static std::vector<char> read_file(const std::string &filePath);
 
 	void create_graphics_pipeline(const std::string &vertFilePath,
-								const std::string &fragFilePath,
-								const VulkanPipelineConfigInfo &configInfo);
+								  const std::string &fragFilePath,
+								  const VulkanPipelineConfigInfo &configInfo);
 
 	void create_shader_module(const std::vector<char> &code,
-							VkShaderModule *shaderModule);
+							  VkShaderModule *shaderModule);
 
 	LVEVulkanDevice &vulkanDevice;
 	VkPipeline graphicsPipeline;

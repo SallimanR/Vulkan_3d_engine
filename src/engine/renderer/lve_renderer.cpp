@@ -105,8 +105,8 @@ void LVERenderer::end_frame() {
 		throw std::runtime_error("failed to record command buffer!");
 	}
 
-	auto result = lveVulkanSwapChain->submit_command_buffers(&commandBuffer,
-														   &currentImageIndex);
+	auto result = lveVulkanSwapChain->submit_command_buffers(
+		&commandBuffer, &currentImageIndex);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
 		lveWindow.was_window_resized()) {
 		lveWindow.reset_window_resized_flag();
@@ -133,7 +133,8 @@ void LVERenderer::begin_swap_chain_render_pass(VkCommandBuffer commandBuffer) {
 		lveVulkanSwapChain->get_framebuffer(currentImageIndex);
 
 	renderPassInfo.renderArea.offset = {0, 0};
-	renderPassInfo.renderArea.extent = lveVulkanSwapChain->get_swap_chain_extent();
+	renderPassInfo.renderArea.extent =
+		lveVulkanSwapChain->get_swap_chain_extent();
 
 	std::array<VkClearValue, 2> clearValues{};
 	clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f};

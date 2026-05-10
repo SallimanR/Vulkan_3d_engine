@@ -10,9 +10,9 @@ namespace lve {
 // local callback functions
 static VKAPI_ATTR VkBool32 VKAPI_CALL
 debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-			  VkDebugUtilsMessageTypeFlagsEXT messageType,
-			  const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-			  void *pUserData) {
+			   VkDebugUtilsMessageTypeFlagsEXT messageType,
+			   const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
+			   void *pUserData) {
 	std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
 	return VK_FALSE;
@@ -31,9 +31,9 @@ VkResult create_debug_utils_messenger_ext(
 	}
 }
 
-void destroy_debug_utils_messenger_ext(VkInstance instance,
-								   VkDebugUtilsMessengerEXT debugMessenger,
-								   const VkAllocationCallbacks *pAllocator) {
+void destroy_debug_utils_messenger_ext(
+	VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
+	const VkAllocationCallbacks *pAllocator) {
 	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
 		instance, "vkDestroyDebugUtilsMessengerEXT");
 	if (func != nullptr) {
@@ -243,7 +243,7 @@ void LVEVulkanDevice::setup_debug_messenger() {
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
 	populate_debug_messenger_create_info(createInfo);
 	if (create_debug_utils_messenger_ext(instance, &createInfo, nullptr,
-									 &debugMessenger) != VK_SUCCESS) {
+										 &debugMessenger) != VK_SUCCESS) {
 		throw std::runtime_error("failed to set up debug messenger!");
 	}
 }
@@ -331,7 +331,8 @@ bool LVEVulkanDevice::check_device_extension_support(VkPhysicalDevice device) {
 	return requiredExtensions.empty();
 }
 
-QueueFamilyIndices LVEVulkanDevice::find_queue_families(VkPhysicalDevice device) {
+QueueFamilyIndices
+LVEVulkanDevice::find_queue_families(VkPhysicalDevice device) {
 	QueueFamilyIndices indices;
 
 	uint32_t queueFamilyCount = 0;
@@ -396,8 +397,8 @@ LVEVulkanDevice::query_swap_chain_support(VkPhysicalDevice device) {
 
 VkFormat
 LVEVulkanDevice::find_supported_format(const std::vector<VkFormat> &candidates,
-									 VkImageTiling tiling,
-									 VkFormatFeatureFlags features) {
+									   VkImageTiling tiling,
+									   VkFormatFeatureFlags features) {
 	for (VkFormat format : candidates) {
 		VkFormatProperties props;
 		vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
@@ -414,7 +415,7 @@ LVEVulkanDevice::find_supported_format(const std::vector<VkFormat> &candidates,
 }
 
 uint32_t LVEVulkanDevice::find_memory_type(uint32_t typeFilter,
-										 VkMemoryPropertyFlags properties) {
+										   VkMemoryPropertyFlags properties) {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
@@ -429,9 +430,9 @@ uint32_t LVEVulkanDevice::find_memory_type(uint32_t typeFilter,
 }
 
 void LVEVulkanDevice::create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
-								   VkMemoryPropertyFlags properties,
-								   VkBuffer &buffer,
-								   VkDeviceMemory &bufferMemory) {
+									VkMemoryPropertyFlags properties,
+									VkBuffer &buffer,
+									VkDeviceMemory &bufferMemory) {
 	VkBufferCreateInfo bufferInfo{};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 	bufferInfo.size = size;
@@ -492,7 +493,7 @@ void LVEVulkanDevice::end_single_time_commands(VkCommandBuffer commandBuffer) {
 }
 
 void LVEVulkanDevice::copy_buffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
-								 VkDeviceSize size) {
+								  VkDeviceSize size) {
 	VkCommandBuffer commandBuffer = begin_single_time_commands();
 
 	VkBufferCopy copyRegion{};
@@ -505,8 +506,8 @@ void LVEVulkanDevice::copy_buffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
 }
 
 void LVEVulkanDevice::copy_buffer_to_image(VkBuffer buffer, VkImage image,
-										uint32_t width, uint32_t height,
-										uint32_t layerCount) {
+										   uint32_t width, uint32_t height,
+										   uint32_t layerCount) {
 	VkCommandBuffer commandBuffer = begin_single_time_commands();
 
 	VkBufferImageCopy region{};
@@ -528,9 +529,9 @@ void LVEVulkanDevice::copy_buffer_to_image(VkBuffer buffer, VkImage image,
 }
 
 void LVEVulkanDevice::create_image_with_info(const VkImageCreateInfo &imageInfo,
-										  VkMemoryPropertyFlags properties,
-										  VkImage &image,
-										  VkDeviceMemory &imageMemory) {
+											 VkMemoryPropertyFlags properties,
+											 VkImage &image,
+											 VkDeviceMemory &imageMemory) {
 	if (vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create image!");
 	}

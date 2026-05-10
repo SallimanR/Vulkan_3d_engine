@@ -40,7 +40,7 @@ class LVEVulkanSwapChain {
 
 	VkResult acquire_next_image(uint32_t *imageIndex);
 	VkResult submit_command_buffers(const VkCommandBuffer *buffers,
-								  uint32_t *imageIndex);
+									uint32_t *imageIndex);
 
 	bool compare_swap_formats(const LVEVulkanSwapChain &swapChain) const {
 		return swapChain.swapChainDepthFormat == swapChainDepthFormat &&
