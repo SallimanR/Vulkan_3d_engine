@@ -27,6 +27,36 @@ struct TransformComponent {
 		transform = glm::scale(transform, scale);
 		return transform;
 	}
+
+	glm::mat4 mat4_optimized() {
+		/* https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix */
+		const float sin3 = glm::sin(rotation.z);
+		const float cos3 = glm::cos(rotation.z);
+		const float sin2 = glm::sin(rotation.x);
+		const float cos2 = glm::cos(rotation.x);
+		const float sin1 = glm::sin(rotation.y);
+		const float cos1 = glm::cos(rotation.y);
+
+		return glm::mat4{{
+							 scale.x * (cos1 * cos3 + sin1 * sin2 * sin3),
+							 scale.x * (cos2 * sin3),
+							 scale.x * (cos1 * sin2 * sin3 - cos3 * sin1),
+							 0.0f,
+						 },
+						 {
+							 scale.y * (cos3 * sin1 * sin2 - cos1 * sin3),
+							 scale.y * (cos2 * cos3),
+							 scale.y * (cos1 * cos3 * sin2 + sin1 * sin3),
+							 0.0f,
+						 },
+						 {
+							 scale.z * (cos2 * sin1),
+							 scale.z * (-sin2),
+							 scale.z * (cos1 * cos2),
+							 0.0f,
+						 },
+						 {translation.x, translation.y, translation.z, 1.0f}};
+	}
 };
 
 class LVEObject {
