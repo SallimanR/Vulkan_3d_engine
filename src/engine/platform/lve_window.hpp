@@ -25,7 +25,7 @@ class LVEWindow {
 	bool was_window_resized() { return isFrameBufferResized; }
 	void reset_window_resized_flag() { isFrameBufferResized = false; }
 
-	void create_window_surface(VkInstance instace, VkSurfaceKHR *surface);
+	void create_window_surface(VkInstance instance, VkSurfaceKHR *surface);
 
 	GLFWwindow *get_window_ptr() const { return window; }
 

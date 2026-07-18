@@ -41,9 +41,9 @@ void LVEWindow::init_window() {
 	glfwSetFramebufferSizeCallback(window, frame_buffer_resized_callback);
 }
 
-void LVEWindow::create_window_surface(VkInstance instace,
+void LVEWindow::create_window_surface(VkInstance instance,
 									  VkSurfaceKHR *surface) {
-	if (glfwCreateWindowSurface(instace, window, nullptr, surface) !=
+	if (glfwCreateWindowSurface(instance, window, nullptr, surface) !=
 		VK_SUCCESS) {
 		throw std::runtime_error("failed to create window surface");
 	}
