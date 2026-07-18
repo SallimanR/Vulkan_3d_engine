@@ -1,10 +1,9 @@
 # bin directories:
-[Bb]uild*/
-[Bb]in/
-compile_commands.json
+/[Bb]uild*/
 
 # clangd:
 .cache/
+compile_commands.json
 
 # cmake files:
 CMakeFiles/
@@ -12,9 +11,6 @@ cmake_install.cmake
 CMakeCache.txt
 
 Makefile
-
-# meson files:
-build/
 
 assets/spirv/
 
